@@ -1,0 +1,248 @@
+{% extends 'partials/base.html' %}
+{% block title %} 打擊成績 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ cupvalue.cup_name }} {{ gamevalue.game_name }}：<span class="text-primary">{{ hometeamvalue.team_name }}VS{{ awayteamvalue.team_name }}</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/batting.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<section class="p-5">
+    <div class="container containertable">
+        <form class="row gy-2 gx-3 align-items-center" method="POST">
+            {% for message in messages %}
+                {% if message %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% csrf_token %}
+            <div class="col-auto">
+                {{ playerform.player_name|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingSelect">Preference</label>
+                <select class="form-select" id="autoSizingSelect" name="player_id">
+                  <option selected value="">選擇{{ hometeamvalue.team_name }}球員</option>
+                  {% for hometeam_playervalue in hometeam_playervalues %}
+                  <option value={{ hometeam_playervalue.player_id }}>{{ hometeam_playervalue.player.player_name }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingSelect">Preference</label>
+                <select class="form-select" id="autoSizingSelect" name="team_id" required>
+                  <option selected disabled value="">選擇所屬球隊</option>
+                  <option value={{ hometeamvalue.team_id }}>{{ hometeamvalue.team_name }}</option>
+                  <option value={{ awayteamvalue.team_id }}>{{ awayteamvalue.team_name }}</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingSelect">Preference</label>
+                <select class="form-select" id="autoSizingSelect" name="player_order" required>
+                  <option selected disabled value="">選擇打序</option>
+                  <option value=1>第一棒</option>
+                  <option value=2>第二棒</option>
+                  <option value=3>第三棒</option>
+                  <option value=4>第四棒</option>
+                  <option value=5>第五棒</option>
+                  <option value=6>第六棒</option>
+                  <option value=7>第七棒</option>
+                  <option value=8>第八棒</option>
+                  <option value=9>第九棒</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingSelect">Preference</label>
+                <select class="form-select" id="autoSizingSelect" name="player_role" required>
+                  <option selected disabled value="">選擇守位</option>
+                  <option value="投手">投手</option>
+                  <option value="捕手">捕手</option>
+                  <option value="一壘手">一壘手</option>
+                  <option value="二壘手">二壘手</option>
+                  <option value="三壘手">三壘手</option>
+                  <option value="游擊手">游擊手</option>
+                  <option value="左外野手">左外野手</option>
+                  <option value="中外野手">中外野手</option>
+                  <option value="右外野手">右外野手</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <!-- <label class="visually-hidden" for="autoSizingInput">Name</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="Jane Doe"> -->
+                {{ battingform.b_pa|as_crispy_field }}
+            </div>
+            <!-- <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingInput">Name</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="打點">
+            </div> -->
+            <div class="col-auto">
+                {{ battingform.b_single|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_double|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_triple|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_hr|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_rbi|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_bb|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_ibb|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_hbp|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_so|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_sf|as_crispy_field }}
+            </div>
+            <div class="col-auto">
+                {{ battingform.b_sh|as_crispy_field }}
+            </div>
+            <!-- <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingInput">Name</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="滾地出局">
+            </div>
+            <div class="col-auto">
+                <label class="visually-hidden" for="autoSizingInput">Name</label>
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="高飛出局">
+            </div> -->
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary">建立成績</button>
+            </div>
+        </form>
+        <br>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">{{ hometeamvalue.team_name }}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ awayteamvalue.team_name }}</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">姓名</th>
+                            <th scope="col">打序</th>
+                            <th scope="col">守位</th>
+                            <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                            <th class="header hovertext" data-hover="1B" scope="col">一安</th>
+                            <th class="header hovertext" data-hover="2B" scope="col">二安</th>
+                            <th class="header hovertext" data-hover="3B" scope="col">三安</th>
+                            <th class="header hovertext" data-hover="HR" scope="col">全壘打</th>
+                            <th class="header hovertext" data-hover="RBI" scope="col">打點</th>
+                            <th class="header hovertext" data-hover="BB" scope="col">四壞</th>
+                            <th class="header hovertext" data-hover="IBB" scope="col">故四</th>
+                            <th class="header hovertext" data-hover="HBP" scope="col">死球</th>
+                            <th class="header hovertext" data-hover="SO" scope="col">三振</th>
+                            <th class="header hovertext" data-hover="SF" scope="col">犧飛</th>
+                            <th class="header hovertext" data-hover="SH" scope="col">犧短</th>
+                            <th scope="col">檢視數據</th>
+                            <th scope="col">編輯成績</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hometeam_battingvalue in hometeam_battingvalues %}
+                        <tr>
+                            <th scope="row">{{ hometeam_battingvalue.player.player_name }}</th>
+                            <td>{% if hometeam_battingvalue.player_order == 10 %}{% else %}{{ hometeam_battingvalue.player_order }}{% endif %}</td>
+                            <td>{{ hometeam_battingvalue.player_role }}</td>
+                            <td>{{ hometeam_battingvalue.b_pa }}</td>
+                            <td>{{ hometeam_battingvalue.b_single }}</td>
+                            <td>{{ hometeam_battingvalue.b_double }}</td>
+                            <td>{{ hometeam_battingvalue.b_triple }}</td>
+                            <td>{{ hometeam_battingvalue.b_hr }}</td>
+                            <td>{{ hometeam_battingvalue.b_rbi }}</td>
+                            <td>{{ hometeam_battingvalue.b_bb }}</td>
+                            <td>{{ hometeam_battingvalue.b_ibb }}</td>
+                            <td>{{ hometeam_battingvalue.b_hbp }}</td>
+                            <td>{{ hometeam_battingvalue.b_so }}</td>
+                            <td>{{ hometeam_battingvalue.b_sh }}</td>
+                            <td>{{ hometeam_battingvalue.b_sf }}</td>
+                            <td><a class="btn btn-secondary" href="{% url 'batting-data' cupvalue.cup_id hometeam_battingvalue.game_id hometeam_battingvalue.player_id %}">檢視</a></td>
+                            <td>
+                                <a class="btn btn-warning" href="{% url 'batting-update' cupvalue.cup_id hometeam_battingvalue.game_id hometeam_battingvalue.player_id %}">修改</a>
+                                <a class="btn btn-danger" href="{% url 'batting-delete' cupvalue.cup_id hometeam_battingvalue.game_id hometeam_battingvalue.player_id %}">刪除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">姓名</th>
+                            <th scope="col">打序</th>
+                            <th scope="col">守位</th>
+                            <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                            <th class="header hovertext" data-hover="1B" scope="col">一安</th>
+                            <th class="header hovertext" data-hover="2B" scope="col">二安</th>
+                            <th class="header hovertext" data-hover="3B" scope="col">三安</th>
+                            <th class="header hovertext" data-hover="HR" scope="col">全壘打</th>
+                            <th class="header hovertext" data-hover="RBI" scope="col">打點</th>
+                            <th class="header hovertext" data-hover="BB" scope="col">四壞</th>
+                            <th class="header hovertext" data-hover="IBB" scope="col">故四</th>
+                            <th class="header hovertext" data-hover="HBP" scope="col">死球</th>
+                            <th class="header hovertext" data-hover="SO" scope="col">三振</th>
+                            <th class="header hovertext" data-hover="SF" scope="col">犧飛</th>
+                            <th class="header hovertext" data-hover="SH" scope="col">犧短</th>
+                            <th scope="col">檢視數據</th>
+                            <th scope="col">編輯成績</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for awayteam_battingvalue in awayteam_battingvalues %}
+                        <tr>
+                            <th scope="row">{{ awayteam_battingvalue.player.player_name }}</th>
+                            <td>{% if awayteam_battingvalue.player_order == 10 %}{% else %}{{ awayteam_battingvalue.player_order }}{% endif %}</td>
+                            <td>{{ awayteam_battingvalue.player_role }}</td>
+                            <td>{{ awayteam_battingvalue.b_pa }}</td>
+                            <td>{{ awayteam_battingvalue.b_single }}</td>
+                            <td>{{ awayteam_battingvalue.b_double }}</td>
+                            <td>{{ awayteam_battingvalue.b_triple }}</td>
+                            <td>{{ awayteam_battingvalue.b_hr }}</td>
+                            <td>{{ awayteam_battingvalue.b_rbi }}</td>
+                            <td>{{ awayteam_battingvalue.b_bb }}</td>
+                            <td>{{ awayteam_battingvalue.b_ibb }}</td>
+                            <td>{{ awayteam_battingvalue.b_hbp }}</td>
+                            <td>{{ awayteam_battingvalue.b_so }}</td>
+                            <td>{{ awayteam_battingvalue.b_sh }}</td>
+                            <td>{{ awayteam_battingvalue.b_sf }}</td>
+                            <td><a class="btn btn-secondary" href="{% url 'batting-data' cupvalue.cup_id awayteam_battingvalue.game_id awayteam_battingvalue.player_id %}">檢視</a></td>
+                            <td>
+                                <a class="btn btn-warning" href="{% url 'batting-update' cupvalue.cup_id awayteam_battingvalue.game_id awayteam_battingvalue.player_id %}">更新</a>
+                                <a class="btn btn-danger" href="{% url 'batting-delete' cupvalue.cup_id awayteam_battingvalue.game_id awayteam_battingvalue.player_id %}">刪除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

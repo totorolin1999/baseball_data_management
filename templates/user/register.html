@@ -1,0 +1,48 @@
+{% extends 'partials/base.html' %}
+{% block title %} 註冊 {% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<br>
+<br>
+<section class="p-5 m-5">
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-6 offset-md-3">
+                <!-- <div class="alert alert-danger">
+                    
+                </div> -->
+                {{ form.errors}}
+                <div class="card">
+                    <div class="card-header">
+                        註冊
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {% comment %} <label for="exampleInputName" class="form-label">姓名</label> {% endcomment %}
+                                {{ form.username|as_crispy_field }}
+                                <div id="nameHelp" class="form-text"></div>
+                            </div>
+                            <div class="mb-3">
+                                {% comment %} <label for="exampleInputemail" class="form-label">Email</label> {% endcomment %}
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                            <div class="mb-3">
+                                {% comment %} <label for="exampleInputPassword1" class="form-label">密碼</label> {% endcomment %}
+                                {{ form.password1|as_crispy_field }}
+                            </div>
+                            <div class="mb-3">
+                                {% comment %} <label for="exampleInputPassword2" class="form-label">確認密碼</label> {% endcomment %}
+                                {{ form.password2|as_crispy_field }}
+                            </div>
+                            <button type="submit" class="btn btn-success">註冊</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

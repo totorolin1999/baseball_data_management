@@ -1,0 +1,37 @@
+{% extends 'partials/base.html' %}
+{% block title %} 刪除打擊資料 {% endblock %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+<br>
+<!-- Learn Sections -->
+<section id="learn" class="p-5">
+    <div class="container">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-md">
+          <img src="{% static '/manager.svg' %}" class="img-fluid" alt="" />
+        </div>
+        <div class="col-md p-5">
+            <form method="POST">
+                <h2>刪除打擊資料</h2>
+                <br>
+                {% csrf_token %}
+                {{ form }}
+                <p class="lead">
+                    您確定要刪除這筆打擊資料嗎？
+                </p>
+                <!-- <p>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque
+                    reiciendis eius autem eveniet mollitia, at asperiores suscipit
+                    quae similique laboriosam iste minus placeat odit velit quos,
+                    nulla architecto amet voluptates?
+                </p> -->
+                <a href="{% url 'batting' cupvalue.cup_id battingvalue.game_id %}" class="btn btn-secondary">取消</a>
+                <input class="btn btn-danger" type="submit" value="刪除">
+            </form>
+        </div>
+      </div>
+    </div>
+</section>
+{% endblock %}

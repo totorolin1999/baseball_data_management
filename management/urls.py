@@ -1,0 +1,26 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('dashboard/', views.index, name='index'),
+    path('team/', views.team, name='team'),
+    path('hometeam/delete/<int:team_id>/', views.hometeam_delete, name='hometeam-delete'),
+    path('hometeam/update/<int:team_id>/', views.hometeam_update, name='hometeam-update'),
+    path('hometeam/', views.hometeam, name='hometeam'),
+    path('awayteam/', views.awayteam, name='awayteam'),
+    path('cup/', views.cup, name='cup'),
+    path('cup/delete/<int:cup_id>/', views.cup_delete, name='cup-delete'),
+    path('cup/update/<int:cup_id>/', views.cup_update, name='cup-update'),
+    path('cup/<int:cup_id>/game/', views.game, name='game'),
+    path('cup/<int:cup_id>/game/delete/<int:game_id>/', views.game_delete, name='game-delete'),
+    path('cup/<int:cup_id>/game/update/<int:game_id>/', views.game_update, name='game-update'),
+    path('batter/<int:team_id>/', views.batter, name='batter'),
+    path('pitcher/', views.pitcher, name='pitcher'),
+    path('manager/', views.manager, name='manager'),
+    path('manager/detail/<int:pk>/', views.manager_detail, name='manager-detail'),
+    path('cup/<int:cup_id>/game/<int:game_id>/batting/', views.batting, name='batting'),
+    path('cup/<int:cup_id>game/<int:game_id>/batting/<int:player_id>', views.batting_data, name='batting-data'),
+    path('cup/<int:cup_id>/game/<int:game_id>/batting/delete/<int:player_id>/', views.batting_delete, name='batting-delete'),
+    path('cup/<int:cup_id>/game/<int:game_id>/batting/update/<int:player_id>/', views.batting_update, name='batting-update'),
+    path('cup/<int:cup_id>/game/<int:game_id>/pitching/', views.pitching, name='pitching'),
+]

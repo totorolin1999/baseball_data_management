@@ -1,0 +1,218 @@
+{% extends 'partials/base.html' %}
+{% block title %} 打者 {% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<br>
+<br>
+<section class="pt-5 mt-5 pb-5 mb-5">
+    <div class="container containertable">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">暨南大學</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0"></div>
+        </div>
+        <table class="table table-striped">
+            <thead style="position: sticky;top: 0" class="table-dark">
+                <tr>
+                    <th class="header" scope="col">姓名</th>
+                    <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                    <th class="header hovertext" data-hover="AVG" scope="col">打擊率</th>
+                    <th class="header hovertext" data-hover="OBP" scope="col">上壘率</th>
+                    <th class="header hovertext" data-hover="SLG" scope="col">長打率</th>
+                    <th class="header hovertext" data-hover="OPS" scope="col">攻擊指數</th>
+                    <th class="header hovertext" data-hover="ISO" scope="col">純長打率</th>
+                    <th class="header hovertext" data-hover="BABIP" scope="col">場內球安打率</th>
+                    <th class="header hovertext" data-hover="BIP%" scope="col">擊入場內率</th>
+                    <th class="header hovertext" data-hover="BB％" scope="col">得四壞率</th>
+                    <th class="header hovertext" data-hover="SO/BB" scope="col">三振四壞比</th>
+                    <th class="header hovertext" data-hover="SO%" scope="col">被三振率</th>
+                    <th class="header" scope="col">檢視成績</th>
+                    <th class="header" scope="col">刪除打者</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">選手姓名</th>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td><a class="btn btn-secondary" href="#">檢視</a></td>
+                    <td><a class="btn btn-danger" href="#">刪除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

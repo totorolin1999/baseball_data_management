@@ -1,0 +1,75 @@
+{% load static %}
+
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
+        <p class="lead my-4">
+          本網站目的為協助棒球經理人透過數位方式保存球員成績，<br>
+          並且運用基本數據及進階數據有效分析球員能力
+        </p>
+      </div>
+      <img class="img-fluid w-50 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
+      <!-- <img class="img-fluid w-50 d-none d-sm-block" src="/media/home.svg" alt="" /> -->
+    </div>
+  </div>
+</section>
+
+<!-- Boxes -->
+<section class="p-5">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-md">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="bi bi-laptop"></i>
+            </div>
+            <h3 class="card-title mb-3">比賽記錄</h3>
+            <p class="card-text">
+              建立每場比賽記錄，<br>
+              系統將儲存成績並計算基本數據及進階數據<br>
+              <br>
+            </p>
+            <a href="{% url 'cup' %}" class="btn btn-primary">點此進入</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md">
+        <div class="card bg-secondary text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="fa-solid fa-baseball"></i>
+            </div>
+            <h3 class="card-title mb-3">球員成績</h3>
+            <p class="card-text">
+              檢視您先前建立的球員成績，<br>
+              以及經由系統分析所得的球員數據<br>
+              <br>
+            </p>
+            <a href="{% url 'team' %}" class="btn btn-dark">點此進入</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+            <h3 class="card-title mb-3">數據指南</h3>
+            <p class="card-text">
+              了解該如何運用棒球數據，<br>
+              對球員能力進行分析<br>
+              <br>
+            </p>
+            <a href="#" class="btn btn-primary">點此進入</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

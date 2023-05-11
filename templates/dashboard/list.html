@@ -1,0 +1,624 @@
+{% extends 'partials/base.html' %}
+{% block title %} 攻守名單 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ cupvalue.cup_name }} {{ hometeam_gamevalue.game.game_name }}：<span class="text-primary">{{ hometeam_gamevalue.team.team_name }}VS{{ awayteam_gamevalue.team.team_name }}</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/list.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<section class="p-5">
+    <div class="container">
+        <form class="row gy-2 gx-3 align-items-center" method="POST">
+          {% csrf_token %}
+            <div class="col-auto mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="hometeam_ip_role" id="flexRadioDefault1" value="先攻">
+                <label class="form-check-label" for="flexRadioDefault1">
+                  {{ hometeam_gamevalue.team.team_name }}：先攻
+                </label>
+              </div>
+            </div>
+            <div class="col-auto mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="hometeam_ip_role" id="flexRadioDefault2" checked value="後攻">
+                <label class="form-check-label" for="flexRadioDefault2">
+                  {{ hometeam_gamevalue.team.team_name }}：後攻
+                </label>
+              </div>
+            </div>
+            <div class="col-auto mb-3">
+              <button type="submit" class="btn btn-primary">開始記錄</button>
+            </div>
+            <div class="row">
+              <div class="table-responsive col-md-6">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">{{ hometeam_gamevalue.team.team_name }}打序</th>
+                            <th scope="col">守位</th>
+                            <th scope="col">球員姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <th scope="row">第一棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role1" required>
+                              {% if hometeam_game_playervalue1 != None %}
+                              <option selected>{{ hometeam_game_playervalue1.player_role }}</option>
+                              {% elif hometeam_game_playervalue1 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue1 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name1" value={{ hometeam_game_playervalue1.player.player_name }} required>
+                            {% elif hometeam_game_playervalue1 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name1" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第二棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role2" required>
+                              {% if hometeam_game_playervalue2 != None %}
+                              <option selected>{{ hometeam_game_playervalue2.player_role }}</option>
+                              {% elif hometeam_game_playervalue2 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue2 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name2" value={{ hometeam_game_playervalue2.player.player_name }} required>
+                            {% elif hometeam_game_playervalue2 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name2" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第三棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role3" required>
+                              {% if hometeam_game_playervalue3 != None %}
+                              <option selected>{{ hometeam_game_playervalue3.player_role }}</option>
+                              {% elif hometeam_game_playervalue3 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue3 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name3" value={{ hometeam_game_playervalue3.player.player_name }} required>
+                            {% elif hometeam_game_playervalue3 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name3" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第四棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role4" required>
+                              {% if hometeam_game_playervalue4 != None %}
+                              <option selected>{{ hometeam_game_playervalue4.player_role }}</option>
+                              {% elif hometeam_game_playervalue4 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue4 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name4" value={{ hometeam_game_playervalue4.player.player_name }} required>
+                            {% elif hometeam_game_playervalue4 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name4" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第五棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role5" required>
+                              {% if hometeam_game_playervalue5 != None %}
+                              <option selected>{{ hometeam_game_playervalue5.player_role }}</option>
+                              {% elif hometeam_game_playervalue5 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue5 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name5" value={{ hometeam_game_playervalue5.player.player_name }} required>
+                            {% elif hometeam_game_playervalue5 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name5" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第六棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role6" required>
+                              {% if hometeam_game_playervalue6 != None %}
+                              <option selected>{{ hometeam_game_playervalue6.player_role }}</option>
+                              {% elif hometeam_game_playervalue6 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue6 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name6" value={{ hometeam_game_playervalue6.player.player_name }} required>
+                            {% elif hometeam_game_playervalue6 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name6" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第七棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role7" required>
+                              {% if hometeam_game_playervalue7 != None %}
+                              <option selected>{{ hometeam_game_playervalue7.player_role }}</option>
+                              {% elif hometeam_game_playervalue7 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue7 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name7" value={{ hometeam_game_playervalue7.player.player_name }} required>
+                            {% elif hometeam_game_playervalue7 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name7" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第八棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role8" required>
+                              {% if hometeam_game_playervalue8 != None %}
+                              <option selected>{{ hometeam_game_playervalue8.player_role }}</option>
+                              {% elif hometeam_game_playervalue8 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue8 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name8" value={{ hometeam_game_playervalue8.player.player_name }} required>
+                            {% elif hometeam_game_playervalue8 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name8" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第九棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role9" required>
+                              {% if hometeam_game_playervalue9 != None %}
+                              <option selected>{{ hometeam_game_playervalue9.player_role }}</option>
+                              {% elif hometeam_game_playervalue9 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalue9 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name9" value={{ hometeam_game_playervalue9.player.player_name }} required>
+                            {% elif hometeam_game_playervalue9 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name9" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">投手</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="hometeam_player_role10">
+                              <option selected value="投手">投手</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if hometeam_game_playervalueP != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name10" value={{ hometeam_game_playervalueP.player.player_name }} required>
+                            {% elif hometeam_game_playervalueP == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="hometeam_player_name10" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+              <div class="table-responsive col-md-6">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">{{ awayteam_gamevalue.team.team_name }}打序</th>
+                            <th scope="col">守位</th>
+                            <th scope="col">球員姓名</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <th scope="row">第一棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role1" required>
+                              {% if awayteam_game_playervalue1 != None %}
+                              <option selected>{{ awayteam_game_playervalue1.player_role }}</option>
+                              {% elif awayteam_game_playervalue1 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue1 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name1" value={{ awayteam_game_playervalue1.player.player_name }} required>
+                            {% elif awayteam_game_playervalue1 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name1" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第二棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role2" required>
+                              {% if awayteam_game_playervalue2 != None %}
+                              <option selected>{{ awayteam_game_playervalue2.player_role }}</option>
+                              {% elif awayteam_game_playervalue2 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue2 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name2" value={{ awayteam_game_playervalue2.player.player_name }} required>
+                            {% elif awayteam_game_playervalue2 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name2" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第三棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role3" required>
+                              {% if awayteam_game_playervalue3 != None %}
+                              <option selected>{{ awayteam_game_playervalue3.player_role }}</option>
+                              {% elif awayteam_game_playervalue3 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue3 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name3" value={{ awayteam_game_playervalue3.player.player_name }} required>
+                            {% elif awayteam_game_playervalue3 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name3" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第四棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role4" required>
+                              {% if awayteam_game_playervalue4 != None %}
+                              <option selected>{{ awayteam_game_playervalue4.player_role }}</option>
+                              {% elif awayteam_game_playervalue4 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue4 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name4" value={{ awayteam_game_playervalue4.player.player_name }} required>
+                            {% elif awayteam_game_playervalue4 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name4" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第五棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role5" required>
+                              {% if awayteam_game_playervalue5 != None %}
+                              <option selected>{{ awayteam_game_playervalue5.player_role }}</option>
+                              {% elif awayteam_game_playervalue5 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue5 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name5" value={{ awayteam_game_playervalue5.player.player_name }} required>
+                            {% elif awayteam_game_playervalue5 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name5" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第六棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role6" required>
+                              {% if awayteam_game_playervalue6 != None %}
+                              <option selected>{{ awayteam_game_playervalue6.player_role }}</option>
+                              {% elif awayteam_game_playervalue6 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue6 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name6" value={{ awayteam_game_playervalue6.player.player_name }} required>
+                            {% elif awayteam_game_playervalue6 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name6" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第七棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role7" required>
+                              {% if awayteam_game_playervalue7 != None %}
+                              <option selected>{{ awayteam_game_playervalue7.player_role }}</option>
+                              {% elif awayteam_game_playervalue7 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue7 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name7" value={{ awayteam_game_playervalue7.player.player_name }} required>
+                            {% elif awayteam_game_playervalue7 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name7" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第八棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role8" required>
+                              {% if awayteam_game_playervalue8 != None %}
+                              <option selected>{{ awayteam_game_playervalue8.player_role }}</option>
+                              {% elif awayteam_game_playervalue8 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue8 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name8" value={{ awayteam_game_playervalue8.player.player_name }} required>
+                            {% elif awayteam_game_playervalue8 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name8" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">第九棒</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role9" required>
+                              {% if awayteam_game_playervalue9 != None %}
+                              <option selected>{{ awayteam_game_playervalue9.player_role }}</option>
+                              {% elif awayteam_game_playervalue9 == None %}
+                              <option selected disabled value="">選擇守位</option>
+                              {% endif %}
+                              <option value="投手">投手</option>
+                              <option value="捕手">捕手</option>
+                              <option value="一壘手">一壘手</option>
+                              <option value="二壘手">二壘手</option>
+                              <option value="三壘手">三壘手</option>
+                              <option value="游擊手">游擊手</option>
+                              <option value="左外野手">左外野手</option>
+                              <option value="中外野手">中外野手</option>
+                              <option value="右外野手">右外野手</option>
+                              <option value="指定打擊">指定打擊</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalue9 != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name9" value={{ awayteam_game_playervalue9.player.player_name }} required>
+                            {% elif awayteam_game_playervalue9 == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name9" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th scope="row">投手</th>
+                          <th scope="row">
+                            <select class="form-select" aria-label="Default select example" name="awayteam_player_role10">
+                              <option selected value="投手">投手</option>
+                            </select>
+                          </th>
+                          <th scope="row">
+                            {% if awayteam_game_playervalueP != None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name10" value={{ awayteam_game_playervalueP.player.player_name }} required>
+                            {% elif awayteam_game_playervalueP == None %}
+                            <input type="text" class="form-control" placeholder="請輸入球員姓名" name="awayteam_player_name10" required>
+                            {% endif %}
+                          </th>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

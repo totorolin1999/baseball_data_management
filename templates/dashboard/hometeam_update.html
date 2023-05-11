@@ -1,0 +1,40 @@
+{% extends 'partials/base.html' %}
+{% block title %} 修改球隊名稱 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+<br>
+<!-- Learn Sections -->
+<section id="learn" class="p-5">
+    <div class="container">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-md">
+          <img src="{% static '/manager.svg' %}" class="img-fluid" alt="" />
+        </div>
+        <div class="col-md p-5">
+            <form method="POST">
+                <h2>修改球隊名稱</h2>
+                <br>
+                {% csrf_token %}
+                {{ hometeamform|crispy }}
+                <br>
+                <!-- <p class="lead">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                    Similique deleniti possimus magnam corporis ratione facere!
+                </p>
+                <p>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque
+                    reiciendis eius autem eveniet mollitia, at asperiores suscipit
+                    quae similique laboriosam iste minus placeat odit velit quos,
+                    nulla architecto amet voluptates?
+                </p> -->
+                <a href="{% url 'hometeam' %}" class="btn btn-secondary">取消</a>
+                <input class="btn btn-warning" type="submit" value="修改">
+            </form>
+        </div>
+      </div>
+    </div>
+</section>
+{% endblock %}

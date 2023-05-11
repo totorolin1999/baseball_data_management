@@ -1,0 +1,49 @@
+{% extends 'partials/base.html' %}
+{% block title %} 選擇球隊 {% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<!-- Boxes -->
+<section class="p-5">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-md">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="bi bi-house-fill"></i>
+            </div>
+            <h3 class="card-title mb-3">所屬球隊</h3>
+            <p class="card-text">
+              根據您先前的比賽記錄，<br>
+              取得您的所屬球隊資料<br><br>
+            </p>
+            <a href="{% url 'hometeam' %}" class="btn btn-primary">點此進入</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md">
+        <div class="card bg-secondary text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="bi bi-house"></i>
+            </div>
+            <h3 class="card-title mb-3">對戰球隊</h3>
+            <p class="card-text">
+              根據您先前的比賽記錄，<br>
+              取得您的對戰球隊資料<br><br>
+            </p>
+            <a href="{% url 'awayteam' %}" class="btn btn-dark">點此進入</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<br>
+<br>
+
+{% endblock %}

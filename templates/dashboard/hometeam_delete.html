@@ -1,0 +1,34 @@
+{% extends 'partials/base.html' %}
+{% block title %} 刪除主隊 {% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<section class="p-5 m-5">
+    <div class="container">
+        <div class="card text-center">
+            <div class="card-header">
+              刪除主隊
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form }}
+                    <h5 class="card-title">您確定要刪除這一筆資料嗎？</h5>
+                    <!-- <p class="card-text">系統在刪除主隊後仍會保留先前所創建之隊伍！</p> -->
+                    <a href="{% url 'hometeam' %}" class="btn btn-secondary">取消</a>
+                    <input class="btn btn-danger" type="submit" value="刪除">
+                </form>
+            </div>
+            <!-- <div class="card-footer text-muted">
+              2 days ago
+            </div> -->
+        </div>
+    </div>
+</section>
+<br>
+<br>
+<br>
+{% endblock %}

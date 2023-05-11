@@ -1,0 +1,62 @@
+{% extends 'partials/base.html' %}
+{% block title %} 盃賽記錄 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ user.username }}經理人<span class="text-primary">的盃賽記錄</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/trophy.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<!-- Boxes -->
+<section class="pt-5 mt-5 pb-5 mb-5">
+  <div class="container">
+    <form class="row gy-2 gx-3 align-items-center" method="POST">
+      {% for message in messages %}
+          {% if message %}
+          <div class="alert alert-{{ message.tags }}" role="alert">
+              {{ message }}
+          </div>
+          {% endif %}
+      {% endfor %}
+      {% csrf_token %}
+      <div class="col-auto">
+        <label class="visually-hidden" for="autoSizingInput">Name</label>
+        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入比賽名稱"> -->
+        {{ cupform.cup_name|as_crispy_field }}
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">建立盃賽</button>
+      </div>
+    </form>
+    <br>
+    <div class="row text-center g-4">
+      {% for cupvalue in cupvalues %}
+      <div class="col-md-3">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <div class="h1 mb-3">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 class="card-title mb-3">{{ cupvalue.cup_name }}</h3>
+            <p class="card-text"></p>
+            <a href="{% url 'game' cupvalue.cup_id %}" class="btn btn-primary">比賽</a>
+            <a class="btn btn-warning" href="{% url 'cup-update' cupvalue.cup_id %}">修改</a>
+            <a class="btn btn-danger" href="{% url 'cup-delete' cupvalue.cup_id %}">刪除</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

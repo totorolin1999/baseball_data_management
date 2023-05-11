@@ -1,0 +1,22 @@
+{% extends 'partials/base.html' %}
+{% block title %}Delete Page{% endblock %}
+
+{% block content %}
+<section class="p-5 m-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">刪除</h4>
+                <p>您確定要刪除這一筆資料嗎？</p>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    <!-- {{ form }} -->
+                    <a class="btn btn-secondary" href="{% url 'pitching' %}">取消</a>
+                    <input class="btn btn-danger" type="submit" value="刪除">
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

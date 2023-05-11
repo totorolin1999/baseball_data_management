@@ -1,0 +1,70 @@
+{% extends 'partials/base.html' %}
+{% block title %} 修改打擊資料 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
+        <p class="lead my-4">
+          本網站目的為協助棒球經理人透過數位方式保存球員成績，<br>
+          並且運用基本數據及進階數據有效分析球員能力
+        </p>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
+      <!-- <img class="img-fluid w-50 d-none d-sm-block" src="/media/home.svg" alt="" /> -->
+    </div>
+  </div>
+</section>
+<section class="pt-5 mt-5 pb-5 mb-5">
+    <div class="container">
+      <form method="POST">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="header" scope="col">姓名</th>
+                    <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                    <th class="header hovertext" data-hover="1B" scope="col">一安</th>
+                    <th class="header hovertext" data-hover="2B" scope="col">二安</th>
+                    <th class="header hovertext" data-hover="3B" scope="col">三安</th>
+                    <th class="header hovertext" data-hover="HR" scope="col">全壘打</th>
+                    <th class="header hovertext" data-hover="RBI" scope="col">打點</th>
+                    <th class="header hovertext" data-hover="BB" scope="col">四壞</th>
+                    <th class="header hovertext" data-hover="IBB" scope="col">故四</th>
+                    <th class="header hovertext" data-hover="HBP" scope="col">死球</th>
+                    <th class="header hovertext" data-hover="SO" scope="col">三振</th>
+                    <th class="header hovertext" data-hover="SF" scope="col">犧飛</th>
+                    <th class="header hovertext" data-hover="SH" scope="col">犧短</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ playerform.player_name|as_crispy_field }}</th>
+                    <td>{{ battingform.b_pa|as_crispy_field }}</td>
+                    <td>{{ battingform.b_single|as_crispy_field }}</td>
+                    <td>{{ battingform.b_double|as_crispy_field }}</td>
+                    <td>{{ battingform.b_triple|as_crispy_field }}</td>
+                    <td>{{ battingform.b_hr|as_crispy_field }}</td>
+                    <td>{{ battingform.b_rbi|as_crispy_field }}</td>
+                    <td>{{ battingform.b_bb|as_crispy_field }}</td>
+                    <td>{{ battingform.b_ibb|as_crispy_field }}</td>
+                    <td>{{ battingform.b_hbp|as_crispy_field }}</td>
+                    <td>{{ battingform.b_so|as_crispy_field }}</td>
+                    <td>{{ battingform.b_sf|as_crispy_field }}</td>
+                    <td>{{ battingform.b_sh|as_crispy_field }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="float-end">
+          <a href="{% url 'batting' cupvalue.cup_id battingvalue.game_id %}" class="btn btn-secondary">取消</a>
+          <input class="btn btn-warning" type="submit" value="修改">
+        </div>
+      </form>
+    </div>
+</section>
+{% endblock %}

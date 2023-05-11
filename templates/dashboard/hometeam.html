@@ -1,0 +1,61 @@
+{% extends 'partials/base.html' %}
+{% block title %} 選擇所屬球隊 {% endblock %}
+{% load static %}
+
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
+        <p class="lead my-4">
+          本網站目的為協助棒球經理人透過數位方式保存球員成績，<br>
+          並且運用基本數據及進階數據有效分析球員能力
+        </p>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
+      <!-- <img class="img-fluid w-50 d-none d-sm-block" src="/media/home.svg" alt="" /> -->
+    </div>
+  </div>
+</section>
+<!-- Boxes -->
+<section class="p-5">
+  <div class="container">
+    <div class="row text-center g-4">
+      {% for message in messages %}
+          {% if message %}
+          <div class="alert alert-{{ message.tags }}" role="alert">
+              {{ message }}
+          </div>
+          {% endif %}
+      {% endfor %}
+      {% for teamvalue in teamvalues %}
+        {% for team_gamevalue in team_gamevalues %}
+          {% if teamvalue.team_id == team_gamevalue.team_id %}
+          {% ifchanged teamvalue.team_name %}
+          <div class="col-md-3">
+            <div class="card bg-dark text-light">
+              <div class="card-body text-center">
+                <!-- <div class="h1 mb-3">
+                  <i class="bi bi-house-fill"></i>
+                </div> -->
+                <h3 class="card-title mb-3">{{ teamvalue.team_name }}</h3>
+                <!-- <p class="card-text">
+                  文字說明
+                </p> -->
+                <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-info">打者</a>
+                <a href="#" class="btn btn-info">投手</a>
+                <a class="btn btn-warning" href="{% url 'hometeam-update' teamvalue.team_id %}">修改</a>
+              </div>
+            </div>
+          </div>
+          {% endifchanged %}
+          {% endif  %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

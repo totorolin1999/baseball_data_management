@@ -1,0 +1,57 @@
+{% extends 'partials/base.html' %}
+{% block title %} 打擊數據 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ cupvalue.cup_name }} {{ gamevalue.game_name }}：<span class="text-primary">{{ hometeamvalue.team_name }}VS{{ awayteamvalue.team_name }}</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/programmer.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<section class="pt-5 mt-5 pb-5 mb-5">
+    <div class="container">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="header" scope="col">姓名</th>
+                    <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                    <th class="header hovertext" data-hover="AVG" scope="col">打擊率</th>
+                    <th class="header hovertext" data-hover="OBP" scope="col">上壘率</th>
+                    <th class="header hovertext" data-hover="SLG" scope="col">長打率</th>
+                    <th class="header hovertext" data-hover="OPS" scope="col">攻擊指數</th>
+                    <th class="header hovertext" data-hover="ISO" scope="col">純長打率</th>
+                    <th class="header hovertext" data-hover="BABIP" scope="col">場內球安打率</th>
+                    <th class="header hovertext" data-hover="BIP%" scope="col">擊入場內率</th>
+                    <th class="header hovertext" data-hover="BB％" scope="col">得四壞率</th>
+                    <th class="header hovertext" data-hover="SO/BB" scope="col">三振四壞比</th>
+                    <th class="header hovertext" data-hover="SO%" scope="col">被三振率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{battingvalue.player.player_name}}</th>
+                    <td>{{battingvalue.b_pa}}</td>
+                    <td>{{avg}}</td>
+                    <td>{{obp}}</td>
+                    <td>{{slg}}</td>
+                    <td>{{ops}}</td>
+                    <td>{{iso}}</td>
+                    <td>{{babip}}</td>
+                    <td>{{bip}}%</td>
+                    <td>{{bbp}}%</td>
+                    <td>{{sobb}}</td>
+                    <td>{{sop}}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

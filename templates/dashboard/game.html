@@ -1,0 +1,84 @@
+{% extends 'partials/base.html' %}
+{% block title %} 比賽 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ cupvalue.cup_name }}<span class="text-primary">的比賽記錄</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/laptop.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<!-- Boxes -->
+<section class="pt-5 mt-5 pb-5 mb-5">
+  <div class="container">
+    <form class="row gy-2 gx-3 align-items-center" method="POST">
+      {% for message in messages %}
+          {% if message %}
+          <div class="alert alert-{{ message.tags }}" role="alert">
+              {{ message }}
+          </div>
+          {% endif %}
+      {% endfor %}
+      {% csrf_token %}
+      <div class="col-auto">
+        <label class="visually-hidden" for="autoSizingInput">Name</label>
+        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入比賽名稱"> -->
+        {{ gameform.game_name|as_crispy_field }}
+      </div>
+      <div class="col-auto">
+        <label class="visually-hidden" for="autoSizingInput">Name</label>
+        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入所屬球隊"> -->
+        <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入所屬球隊" name="hometeam" required>
+      </div>
+      <div class="col-auto">
+        <label class="visually-hidden" for="autoSizingInput">Name</label>
+        <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入對戰球隊" name="awayteam" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">建立比賽</button>
+      </div>
+    </form>
+    <br>
+    <div class="row text-center g-4">
+      {% for gamevalue in gamevalues %}
+      <div class="col-md-4">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <!-- <div class="h1 mb-3">
+              <i class="bi bi-laptop"></i>
+            </div> -->
+            <h3 class="card-title mb-3">{{ gamevalue.game_name }}</h3>
+            <p class="card-text">
+            {% for hometeam_gamevalue in hometeam_gamevalues %}
+              {% if hometeam_gamevalue.game_id == gamevalue.game_id %}
+                {{ hometeam_gamevalue.team.team_name }}
+              {% endif  %}
+            {% endfor %}
+            VS
+            {% for awayteam_gamevalue in awayteam_gamevalues %}
+              {% if awayteam_gamevalue.game_id == gamevalue.game_id %}
+                {{ awayteam_gamevalue.team.team_name }}
+              {% endif  %}
+            {% endfor %}
+            </p>
+            <a href="{% url 'batting' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-primary">打者</a>
+            <a href="{% url 'pitching' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-primary">投手</a>
+            <a class="btn btn-warning" href="{% url 'game-update' cupvalue.cup_id gamevalue.game_id %}">修改</a>
+            <a class="btn btn-danger" href="{% url 'game-delete' cupvalue.cup_id gamevalue.game_id %}">刪除</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

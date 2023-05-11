@@ -1,0 +1,42 @@
+{% extends 'partials/base.html' %}
+{% block title %}Manager Page{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated and user.is_staff and user.is_superuser %}
+
+<!--Table-->
+<div class="container">
+    <div class="row my-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+            <table class="table bg-white">
+                <thead class="bg-info">
+                    <tr class="text-white">
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for manager in managers %}
+                    <tr>
+                        <th scope="row"><a class="btn btn-info btn-sm" href="{% url 'manager-detail' manager.id %}">View</a></th>
+                        <td>{{ manager.username }}</td>
+                        <td>{{ manager.email }}</td>
+                        <td>{{ manager.profile.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% else %}
+{% endif %}
+
+<!--End Table-->
+{% endblock %}

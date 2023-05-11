@@ -1,0 +1,71 @@
+{% extends 'partials/base.html' %}
+{% block title %}Delete Page{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<section class="p-5 m-5">
+    <div class="container">
+        <div class="row">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">更新</h4>
+                <p>您確定要更新這一筆資料嗎？</p>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.name|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.ip|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.h|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.hr|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.bb|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.ibb|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.hbp|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.so|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-control">
+                                {{ form.er|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a class="btn btn-secondary" href="{% url 'pitching' %}">取消</a>
+                        <input class="btn btn-warning" type="submit" value="更新">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
