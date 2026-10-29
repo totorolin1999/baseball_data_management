@@ -1,42 +1,55 @@
 {% extends 'partials/base.html' %}
-{% block title %}Manager Page{% endblock %}
+{% block title %} 經理人管理後台 {% endblock %}
 
 {% block content %}
-
 {% if user.is_authenticated and user.is_staff and user.is_superuser %}
-
-<!--Table-->
-<div class="container">
-    <div class="row my-4">
-        <div class="col-md-4"></div>
-        <div class="col-md-8">
-            <table class="table bg-white">
-                <thead class="bg-info">
-                    <tr class="text-white">
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Phone</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for manager in managers %}
-                    <tr>
-                        <th scope="row"><a class="btn btn-info btn-sm" href="{% url 'manager-detail' manager.id %}">View</a></th>
-                        <td>{{ manager.username }}</td>
-                        <td>{{ manager.email }}</td>
-                        <td>{{ manager.profile.phone }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h3 class="fw-bold mb-1">
+          <i class="fa-solid fa-users-gear text-primary me-2"></i>系統經理人列表
+        </h3>
+        <p class="text-muted small mb-0">管理員專用：檢視註冊經理人資訊與檔案</p>
+      </div>
+      <span class="badge bg-primary px-3 py-2 fs-6">{{ managers|length }} 位經理人</span>
     </div>
 
-</div>
-
-{% else %}
+    <div class="table-card shadow">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+          <thead class="table-dark-custom">
+            <tr>
+              <th scope="col" class="px-3" style="width: 10%">操作</th>
+              <th scope="col" style="width: 30%">經理人帳號</th>
+              <th scope="col" style="width: 35%">電子郵件</th>
+              <th scope="col" style="width: 25%">聯絡電話</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for manager in managers %}
+            <tr>
+              <td class="px-3">
+                <a class="btn btn-sm btn-info" href="{% url 'manager-detail' manager.id %}">
+                  <i class="fa-solid fa-eye me-1"></i> 查看
+                </a>
+              </td>
+              <td class="fw-bold text-light">
+                <i class="fa-solid fa-user-tie text-info me-2 opacity-75"></i>{{ manager.username }}
+              </td>
+              <td>{{ manager.email|default:"尚未設定" }}</td>
+              <td>{{ manager.profile.phone|default:"尚未設定" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center py-4 text-muted">無經理人資料</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
 {% endif %}
-
-<!--End Table-->
 {% endblock %}

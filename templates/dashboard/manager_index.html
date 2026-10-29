@@ -1,72 +1,94 @@
 {% load static %}
 
-<br>
-<!-- Showcase -->
-<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
-  <div class="container">
-    <div class="d-sm-flex align-items-center justify-content-between">
-      <div>
-        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
-        <p class="lead my-4">
-          本網站目的為協助棒球經理人透過數位方式保存球員成績，<br>
-          並且運用基本數據及進階數據有效分析球員能力
+<!-- Modern Showcase / Hero Section -->
+<section class="showcase-section py-5">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3);">
+          <i class="fa-solid fa-trophy text-warning"></i>
+          <span class="small text-info fw-semibold">智慧化球隊數據管理中心</span>
+        </div>
+        <h1 class="showcase-title display-5 fw-extrabold mb-3">
+          歡迎回來，<span class="text-gradient">{{ user.username }} 經理人！</span>
+        </h1>
+        <p class="lead text-muted mb-4" style="line-height: 1.8;">
+          專為棒球經理人打造的數位成績庫與進階指標分析系統。<br class="d-none d-md-block">
+          精準記錄每場賽事安打與投球數據，自動推算 OPS、ISO、BABIP、WHIP 等專業 Sabermetrics 指標。
         </p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+          <a href="{% url 'cup' %}" class="btn btn-primary px-4 py-2">
+            <i class="fa-solid fa-play"></i> 開始記錄盃賽
+          </a>
+          <a href="{% url 'team' %}" class="btn btn-secondary px-4 py-2">
+            <i class="fa-solid fa-chart-line"></i> 查看球員數據
+          </a>
+          <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-toggle="modal" data-bs-target="#statsGlossaryModal">
+            <i class="fa-solid fa-book-open"></i> 指標公式指南
+          </button>
+        </div>
       </div>
-      <img class="img-fluid w-50 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
-      <!-- <img class="img-fluid w-50 d-none d-sm-block" src="/media/home.svg" alt="" /> -->
+      <div class="col-lg-5 text-center">
+        <img class="img-fluid showcase-img" style="max-height: 260px;" src="{% static '/home.svg' %}" alt="Baseball Dashboard Illustration" />
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Boxes -->
-<section class="p-5">
+<!-- Main Feature Cards Section -->
+<section class="py-5">
   <div class="container">
     <div class="row text-center g-4">
-      <div class="col-md">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
-              <i class="bi bi-laptop"></i>
+      <!-- Card 1: 盃賽記錄 -->
+      <div class="col-md-4">
+        <div class="card h-100 p-3">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg">
+              <i class="fa-solid fa-trophy"></i>
             </div>
-            <h3 class="card-title mb-3">比賽記錄</h3>
-            <p class="card-text">
-              建立每場比賽記錄，<br>
-              系統將儲存成績並計算基本數據及進階數據<br>
-              <br>
+            <h4 class="card-title fw-bold mb-3">盃賽與賽程記錄</h4>
+            <p class="card-text text-muted flex-grow-1">
+              建立各盃賽每場精彩對決，輸入完整攻守攻守紀錄，系統自動連動計算選手各項擊球與投球統計。
             </p>
-            <a href="{% url 'cup' %}" class="btn btn-primary">點此進入</a>
+            <a href="{% url 'cup' %}" class="btn btn-primary w-100 mt-3">
+              進入盃賽管理 <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
           </div>
         </div>
       </div>
-      <div class="col-md">
-        <div class="card bg-secondary text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
-              <i class="fa-solid fa-baseball"></i>
+
+      <!-- Card 2: 球員成績 -->
+      <div class="col-md-4">
+        <div class="card h-100 p-3">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg icon-box-gold">
+              <i class="fa-solid fa-baseball-bat-ball"></i>
             </div>
-            <h3 class="card-title mb-3">球員成績</h3>
-            <p class="card-text">
-              檢視您先前建立的球員成績，<br>
-              以及經由系統分析所得的球員數據<br>
-              <br>
+            <h4 class="card-title fw-bold mb-3">球員進階數據庫</h4>
+            <p class="card-text text-muted flex-grow-1">
+              綜覽所屬球隊與對手選手成績，快速掌握 AVG、OBP、SLG、OPS 與 ERA、WHIP 等關鍵量化指標。
             </p>
-            <a href="{% url 'team' %}" class="btn btn-dark">點此進入</a>
+            <a href="{% url 'team' %}" class="btn btn-gold w-100 mt-3">
+              檢視球員數據 <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
           </div>
         </div>
       </div>
-      <div class="col-md">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
+
+      <!-- Card 3: 數據指標指南 -->
+      <div class="col-md-4">
+        <div class="card h-100 p-3">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.25);">
               <i class="fa-solid fa-calculator"></i>
             </div>
-            <h3 class="card-title mb-3">數據指南</h3>
-            <p class="card-text">
-              了解該如何運用棒球數據，<br>
-              對球員能力進行分析<br>
-              <br>
+            <h4 class="card-title fw-bold mb-3">數據指標百科</h4>
+            <p class="card-text text-muted flex-grow-1">
+              完整收錄當代棒球統計學指標定義、計算公式與評估標準，輔助經理人做出最科學的戰術調度。
             </p>
-            <a href="#" class="btn btn-primary">點此進入</a>
+            <button type="button" class="btn btn-secondary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#statsGlossaryModal">
+              開啟數據指南 <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+            </button>
           </div>
         </div>
       </div>

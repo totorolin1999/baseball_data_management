@@ -1,37 +1,25 @@
 {% extends 'partials/base.html' %}
-{% block title %} Logout Page {% endblock %}
+{% block title %} 已成功登出 {% endblock %}
 
 {% block content %}
-<br>
-<br>
-<section class="p-5 m-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                {% for message in messages %}
-                {% if message %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endif %}
-                {% endfor %}
-                <div class="card">
-                    <div class="card-header">
-                        登出
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-danger">
-                            <h4>您已登出</h4>
-                        </div>
-                        <a href="{% url 'login' %}" class="btn btn-success">重新登入</a>
-                    </div>
-                </div>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <div class="card p-4 text-center shadow">
+          <div class="card-body py-4">
+            <div class="icon-box-lg mx-auto mb-3" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.25);">
+              <i class="fa-solid fa-check-double"></i>
             </div>
+            <h3 class="fw-bold mb-2">您已成功登出系統</h3>
+            <p class="text-muted mb-4">棒球數據已安全保存。感謝您的使用，期待下次為您服務！</p>
+            <a href="{% url 'login' %}" class="btn btn-primary px-4 py-2">
+              <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> 重新登入系統
+            </a>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
-<br>
-<br>
-<br>
-<br>
 {% endblock %}

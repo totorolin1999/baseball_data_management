@@ -1,60 +1,57 @@
 {% extends 'partials/base.html' %}
-{% block title %}Manager Page{% endblock %}
+{% block title %} 經理人詳細資料 {% endblock %}
 
 {% block content %}
-
 {% if user.is_authenticated and user.is_staff and user.is_superuser %}
-
-<!--Table-->
-<div class="container">
-    <div class="row my-4">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    Profile Page
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card p-4 shadow">
+          <div class="card-header bg-transparent border-0 d-flex align-items-center justify-content-between pb-0">
+            <h4 class="fw-bold mb-0">
+              <i class="fa-solid fa-id-card text-primary me-2"></i>經理人個人檔案
+            </h4>
+            <a href="{% url 'manager' %}" class="btn btn-sm btn-outline-secondary">
+              <i class="fa-solid fa-arrow-left me-1"></i> 返回經理人列表
+            </a>
+          </div>
+          <div class="card-body pt-4">
+            <div class="row align-items-center g-4">
+              <div class="col-md-4 text-center">
+                {% if managers.profile.image %}
+                <img class="img-thumbnail rounded-circle border-primary border-opacity-50 p-1" style="width: 140px; height: 140px; object-fit: cover;" src="{{ managers.profile.image.url }}" alt="{{ managers.username }}">
+                {% else %}
+                <div class="icon-box-lg mx-auto mb-0" style="width: 120px; height: 120px; font-size: 3rem; border-radius: 50%;">
+                  <i class="fa-solid fa-user-tie"></i>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <span class="h4"> Profile Information</span>
-                            <hr>
-                            <table class="table bg-white table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Name</th>
-                                        <td>{{ managers.username }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Email</th>
-                                        <td>{{ managers.email }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Phone</th>
-                                        <td>{{ managers.profile.phone }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Address</th>
-                                        <td>{{ managers.profile.address }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                {% endif %}
+                <h5 class="fw-bold mt-3 mb-0">{{ managers.username }}</h5>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1">經理人 ID #{{ managers.id }}</span>
+              </div>
+              <div class="col-md-8">
+                <div class="p-3 rounded-3" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color);">
+                  <div class="row g-3">
+                    <div class="col-sm-4 text-muted">使用者名稱</div>
+                    <div class="col-sm-8 fw-semibold text-light">{{ managers.username }}</div>
 
-                        </div>
-                        <div class="col-md-4">
-                            <img class="img-thumbnail" src="{{ managers.profile.image.url }}" alt="">
-                        </div>
-                    </div>
+                    <div class="col-sm-4 text-muted">電子信箱</div>
+                    <div class="col-sm-8 text-light">{{ managers.email|default:"尚未設定" }}</div>
+
+                    <div class="col-sm-4 text-muted">聯絡電話</div>
+                    <div class="col-sm-8 text-light">{{ managers.profile.phone|default:"尚未設定" }}</div>
+
+                    <div class="col-sm-4 text-muted">聯絡地址</div>
+                    <div class="col-sm-8 text-light">{{ managers.profile.address|default:"尚未設定" }}</div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
-{% else %}
+  </div>
+</section>
 {% endif %}
-
-
-<!--End Table-->
 {% endblock %}

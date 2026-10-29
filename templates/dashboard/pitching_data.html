@@ -1,56 +1,118 @@
 {% extends 'partials/base.html' %}
-{% block title %} 投手數據 {% endblock %}
+{% block title %} {{ pitchingvalue.player.player_name }} - 單場投手進階數據 {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
-<br>
-<!-- Showcase -->
-<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
   <div class="container">
-    <div class="d-sm-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
-        <h1>{{ cupvalue.cup_name }} {{ gamevalue.game_name }}：<span class="text-primary">{{ hometeamvalue.team_name }} VS {{ awayteamvalue.team_name }}</span></h1>
+        <nav aria-label="breadcrumb" class="mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'cup' %}" class="text-decoration-none text-info"><i class="fa-solid fa-trophy me-1"></i>盃賽列表</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'game' cupvalue.cup_id %}" class="text-decoration-none text-info">{{ cupvalue.cup_name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}" class="text-decoration-none text-info">投手記錄</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ pitchingvalue.player.player_name }}</li>
+          </ol>
+        </nav>
+        <h1 class="showcase-title h2 mb-1">
+          <span class="text-gradient">{{ pitchingvalue.player.player_name }}</span> 單場進階投球分析
+        </h1>
+        <p class="text-muted small mb-0">{{ cupvalue.cup_name }} - {{ gamevalue.game_name }}：{{ hometeamvalue.team_name }} VS {{ awayteamvalue.team_name }}</p>
       </div>
-      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/programmer.svg' %}" alt="" />
+      <img class="img-fluid showcase-img d-none d-md-block" style="max-height: 120px;" src="{% static '/programmer.svg' %}" alt="Pitching Stats Analysis" />
     </div>
   </div>
 </section>
-<section class="pt-5 mt-5 pb-5 mb-5">
-    <div class="container">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th class="header" scope="col">姓名</th>
-                        <th class="header hovertext" data-hover="IP" scope="col">局數</th>
-                        <th class="header hovertext" data-hover="ER" scope="col">責失</th>
-                        <th class="header hovertext" data-hover="ERA" scope="col">防禦率</th>
-                        <th class="header hovertext" data-hover="WHIP" scope="col">每局被上壘率</th>
-                        <th class="header hovertext" data-hover="H/9" scope="col">九局被安打率</th>
-                        <th class="header hovertext" data-hover="HR/9" scope="col">九局被全壘打率</th>
-                        <th class="header hovertext" data-hover="BB/9" scope="col">九局保送率</th>
-                        <th class="header hovertext" data-hover="K/9" scope="col">九局三振率</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">{{ pitchingvalue.player.player_name }}</th>
-                        <td>{{ pitchingvalue.p_ip }}</td>
-                        <td>{{ pitchingvalue.p_er }}</td>
-                        <td>{{ era }}</td>
-                        <td>{{ whip }}</td>
-                        <td>{{ h9 }}</td>
-                        <td>{{ hr9 }}</td>
-                        <td>{{ bb9 }}</td>
-                        <td>{{ so9 }}</td>
-                    </tr>
-                </tbody>
-            </table>
+
+<!-- Content Section -->
+<section class="py-5">
+  <div class="container">
+    <!-- Key Metrics Highlight Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center border-success border-opacity-25">
+          <span class="text-muted small fw-semibold text-uppercase">防禦率 (ERA)</span>
+          <h2 class="fw-bold text-success my-2">{{ era }}</h2>
+          <small class="text-muted">每 9 局自責失分</small>
         </div>
-        <div class="mt-4">
-            <a href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}" class="btn btn-secondary">返回投球記錄</a>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center border-info border-opacity-25">
+          <span class="text-muted small fw-semibold text-uppercase">被上壘率 (WHIP)</span>
+          <h2 class="fw-bold text-info my-2">{{ whip }}</h2>
+          <small class="text-muted">每局平均被上壘人數</small>
         </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center border-primary border-opacity-25">
+          <span class="text-muted small fw-semibold text-uppercase">奪三振率 (K/9)</span>
+          <h2 class="fw-bold text-primary my-2">{{ so9 }}</h2>
+          <small class="text-muted">每 9 局平均奪三振數</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-3 text-center border-warning border-opacity-25">
+          <span class="text-muted small fw-semibold text-uppercase">保送率 (BB/9)</span>
+          <h2 class="fw-bold text-warning my-2">{{ bb9 }}</h2>
+          <small class="text-muted">每 9 局平均保送數</small>
+        </div>
+      </div>
     </div>
+
+    <!-- Complete Stats Table -->
+    <div class="table-card shadow mb-4">
+      <div class="card-header bg-transparent border-0 d-flex align-items-center justify-content-between">
+        <h5 class="fw-bold mb-0">
+          <i class="fa-solid fa-chart-column text-info me-2"></i>單場 Sabermetrics 投手全項分析表
+        </h5>
+        <span class="badge bg-secondary">局數：{{ pitchingvalue.p_ip }} IP</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+          <thead class="table-dark-custom">
+            <tr>
+              <th scope="col" class="px-3">姓名</th>
+              <th scope="col" class="text-center hovertext" data-hover="投球局數">局數 (IP)</th>
+              <th scope="col" class="text-center hovertext" data-hover="自責失分">自責分 (ER)</th>
+              <th scope="col" class="text-center hovertext" data-hover="防禦率">ERA</th>
+              <th scope="col" class="text-center hovertext" data-hover="每局被上壘率">WHIP</th>
+              <th scope="col" class="text-center hovertext" data-hover="九局被安打率">H/9</th>
+              <th scope="col" class="text-center hovertext" data-hover="九局被全壘打率">HR/9</th>
+              <th scope="col" class="text-center hovertext" data-hover="九局保送率">BB/9</th>
+              <th scope="col" class="text-center hovertext" data-hover="九局奪三振率">K/9</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-3 fw-bold text-light">
+                <i class="fa-solid fa-user-tag text-info me-2"></i>{{ pitchingvalue.player.player_name }}
+              </td>
+              <td class="text-center"><span class="badge bg-secondary">{{ pitchingvalue.p_ip }}</span></td>
+              <td class="text-center fw-bold text-danger">{{ pitchingvalue.p_er }}</td>
+              <td class="text-center fw-bold text-success">{{ era }}</td>
+              <td class="text-center fw-bold text-info">{{ whip }}</td>
+              <td class="text-center text-muted">{{ h9 }}</td>
+              <td class="text-center text-muted">{{ hr9 }}</td>
+              <td class="text-center text-muted">{{ bb9 }}</td>
+              <td class="text-center fw-semibold text-primary">{{ so9 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <div>
+      <a href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left me-1"></i> 返回比賽投球記錄
+      </a>
+      <button type="button" class="btn btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#statsGlossaryModal">
+        <i class="fa-solid fa-book me-1"></i> 查看投手指標定義
+      </button>
+    </div>
+  </div>
 </section>
 {% endblock %}

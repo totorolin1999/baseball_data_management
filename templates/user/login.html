@@ -1,43 +1,54 @@
 {% extends 'partials/base.html' %}
-{% block title %} 登入 {% endblock %}
+{% block title %} 經理人登入 {% endblock %}
 
 {% block content %}
-<br>
-<br>
-<section class="p-5 m-5">
-    <div class="container">
-        <div class="row my-4">
-            <div class="col-md-6 offset-md-3">
-                {% for message in messages %}
-                {% if message %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endif %}
-                {% endfor %}
-                <div class="card">
-                    <div class="card-header">
-                        登入
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="exampleInputUsername" class="form-label">姓名</label>
-                                <input type="text" class="form-control" id="exampleInputUsername" name="username">
-                            </div>
-                            <div class="mb-3">
-                                <label for="exampleInputPassword1" class="form-label">密碼</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
-                            </div>
-                            <button type="submit" class="btn btn-success">登入</button>
-                            <a href="#" class="btn btn-primary">忘記密碼？</a>
-                        </form>
-                    </div>
-                </div>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        {% for message in messages %}
+          {% if message %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+            <i class="fa-solid fa-circle-info me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endif %}
+        {% endfor %}
+
+        <div class="card p-4 shadow">
+          <div class="card-header bg-transparent border-0 text-center pb-2">
+            <div class="icon-box-lg mx-auto mb-3">
+              <i class="fa-solid fa-baseball text-primary"></i>
             </div>
+            <h3 class="fw-bold mb-1">棒球數據系統登入</h3>
+            <p class="text-muted small">請輸入經理人帳號與密碼進入分析後台</p>
+          </div>
+          <div class="card-body pt-2">
+            <form method="POST">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="inputUsername" class="form-label">
+                  <i class="fa-solid fa-user me-1 text-muted"></i>經理人帳號
+                </label>
+                <input type="text" class="form-control" id="inputUsername" name="username" placeholder="請輸入帳號" required autofocus>
+              </div>
+              <div class="mb-4">
+                <label for="inputPassword" class="form-label">
+                  <i class="fa-solid fa-lock me-1 text-muted"></i>登入密碼
+                </label>
+                <input type="password" class="form-control" id="inputPassword" name="password" placeholder="請輸入密碼" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> 立即登入
+              </button>
+              <div class="text-center text-muted small">
+                還沒有經理人帳號？ <a href="{% url 'register' %}" class="text-info fw-semibold text-decoration-none">免費註冊新帳號</a>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
-<br>
 {% endblock %}

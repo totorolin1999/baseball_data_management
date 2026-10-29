@@ -1,63 +1,119 @@
 {% extends 'partials/base.html' %}
-{% block title %} {{ teamvalue.team_name }} - 投手數據 {% endblock %}
+{% block title %} {{ teamvalue.team_name }} - 投手進階數據 {% endblock %}
 {% load crispy_forms_tags %}
-{% block content %}
+{% load static %}
 
-<br>
-<br>
-<section class="pt-5 mt-5 pb-5 mb-5">
-    <div class="container containertable">
-        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="home-tab" type="button">{{ teamvalue.team_name }}</button>
-            </li>
-        </ul>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead style="position: sticky;top: 0" class="table-dark">
-                    <tr>
-                        <th class="header" scope="col">姓名</th>
-                        <th class="header hovertext" data-hover="IP" scope="col">局數</th>
-                        <th class="header hovertext" data-hover="ER" scope="col">責失</th>
-                        <th class="header hovertext" data-hover="H" scope="col">被安打</th>
-                        <th class="header hovertext" data-hover="BB" scope="col">四死球</th>
-                        <th class="header hovertext" data-hover="SO" scope="col">三振</th>
-                        <th class="header hovertext" data-hover="ERA" scope="col">防禦率</th>
-                        <th class="header hovertext" data-hover="WHIP" scope="col">每局被上壘率</th>
-                        <th class="header hovertext" data-hover="H/9" scope="col">九局被安打率</th>
-                        <th class="header hovertext" data-hover="HR/9" scope="col">九局被全壘打率</th>
-                        <th class="header hovertext" data-hover="BB/9" scope="col">九局保送率</th>
-                        <th class="header hovertext" data-hover="K/9" scope="col">九局三振率</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in pitchers_stats %}
-                    <tr>
-                        <th scope="row">{{ stat.name }}</th>
-                        <td>{{ stat.ip }}</td>
-                        <td>{{ stat.er }}</td>
-                        <td>{{ stat.h }}</td>
-                        <td>{{ stat.bb }}</td>
-                        <td>{{ stat.so }}</td>
-                        <td>{{ stat.era }}</td>
-                        <td>{{ stat.whip }}</td>
-                        <td>{{ stat.h9 }}</td>
-                        <td>{{ stat.hr9 }}</td>
-                        <td>{{ stat.bb9 }}</td>
-                        <td>{{ stat.so9 }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="12" class="text-center text-muted">目前該球隊尚無投球成績記錄。</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-4">
-            <a href="{% url 'hometeam' %}" class="btn btn-secondary">返回所屬球隊</a>
-            <a href="{% url 'awayteam' %}" class="btn btn-outline-secondary">返回對戰球隊</a>
-        </div>
+{% block content %}
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <nav aria-label="breadcrumb" class="mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'team' %}" class="text-decoration-none text-info"><i class="fa-solid fa-users me-1"></i>球隊中心</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'hometeam' %}" class="text-decoration-none text-info">球隊列表</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ teamvalue.team_name }} 投手數據</li>
+          </ol>
+        </nav>
+        <h1 class="showcase-title h2 mb-1">
+          {{ teamvalue.team_name }} <span class="text-gradient">投手進階數據報表</span>
+        </h1>
+        <p class="text-muted small mb-0">分析投手群壓制力指標，含 ERA, WHIP, K/9, BB/9 與每九局各項率值</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#statsGlossaryModal">
+          <i class="fa-solid fa-calculator me-1"></i> 指標公式說明
+        </button>
+      </div>
     </div>
+  </div>
+</section>
+
+<!-- Stats Table Section -->
+<section class="py-5">
+  <div class="container">
+    <!-- Team Info Header Bar -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fs-6 fw-bold">
+          <i class="fa-solid fa-bullseye me-1"></i> {{ teamvalue.team_name }} 投手陣
+        </span>
+        <span class="text-muted small">共 {{ pitchers_stats|length }} 名投手有投球記錄</span>
+      </div>
+      <div class="text-muted small">
+        <i class="fa-regular fa-circle-question text-info me-1"></i>懸停表頭可查看指標全稱與計算公式
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-card shadow">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead class="table-dark-custom">
+            <tr>
+              <th scope="col" class="py-3 px-3"><i class="fa-solid fa-user me-1 text-muted"></i>投手姓名</th>
+              <th scope="col" class="text-center hovertext" data-hover="Innings Pitched (投球局數)">局數 (IP)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Earned Runs (自責失分)">自責分 (ER)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Hits Allowed (被安打數)">被安 (H)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Base on Balls (四死球)">保送 (BB)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Strikeouts (三振次數)">奪三振 (SO)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Earned Run Avg: 防禦率">防禦率 (ERA)</th>
+              <th scope="col" class="text-center hovertext" data-hover="WHIP: 每局被上壘率">被上壘率 (WHIP)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Hits per 9 IP: 九局被安打率">被安打率 (H/9)</th>
+              <th scope="col" class="text-center hovertext" data-hover="HR per 9 IP: 九局被全壘打率">被全壘打 (HR/9)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Walks per 9 IP: 九局保送率">保送率 (BB/9)</th>
+              <th scope="col" class="text-center hovertext" data-hover="Strikeouts per 9 IP: 九局奪三振率">三振率 (K/9)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for stat in pitchers_stats %}
+            <tr>
+              <td class="px-3 fw-bold text-light">
+                <i class="fa-solid fa-id-card text-info me-2 opacity-75"></i>{{ stat.name }}
+              </td>
+              <td class="text-center"><span class="badge bg-secondary">{{ stat.ip }}</span></td>
+              <td class="text-center text-muted">{{ stat.er }}</td>
+              <td class="text-center text-muted">{{ stat.h }}</td>
+              <td class="text-center text-muted">{{ stat.bb }}</td>
+              <td class="text-center fw-semibold text-warning">{{ stat.so }}</td>
+              <td class="text-center fw-bold text-success">{{ stat.era }}</td>
+              <td class="text-center fw-bold text-info">{{ stat.whip }}</td>
+              <td class="text-center text-muted">{{ stat.h9 }}</td>
+              <td class="text-center text-muted">{{ stat.hr9 }}</td>
+              <td class="text-center text-muted">{{ stat.bb9 }}</td>
+              <td class="text-center fw-semibold text-primary">{{ stat.so9 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="12" class="text-center py-5">
+                <div class="empty-state py-4">
+                  <div class="empty-state-icon">
+                    <i class="fa-solid fa-bullseye"></i>
+                  </div>
+                  <h5 class="fw-bold text-light">目前該球隊尚無投球成績記錄</h5>
+                  <p class="empty-state-text mb-0">請至盃賽記錄中選取比賽並登打選手投球紀錄。</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Navigation Back Buttons -->
+    <div class="d-flex gap-2 mt-4">
+      <a href="{% url 'hometeam' %}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left me-1"></i> 返回所屬球隊
+      </a>
+      <a href="{% url 'awayteam' %}" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-flag me-1"></i> 返回對戰球隊
+      </a>
+      <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-outline-primary ms-auto">
+        <i class="fa-solid fa-baseball-bat-ball me-1"></i> 切換至打者數據
+      </a>
+    </div>
+  </div>
 </section>
 {% endblock %}

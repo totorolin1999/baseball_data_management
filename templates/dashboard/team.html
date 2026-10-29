@@ -1,49 +1,73 @@
 {% extends 'partials/base.html' %}
-{% block title %} 選擇球隊 {% endblock %}
+{% block title %} 選擇球隊數據 {% endblock %}
+{% load static %}
 
 {% block content %}
-<br>
-<br>
-<br>
-<br>
-<!-- Boxes -->
-<section class="p-5">
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
   <div class="container">
-    <div class="row text-center g-4">
-      <div class="col-md">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
-              <i class="bi bi-house-fill"></i>
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3);">
+          <i class="fa-solid fa-users text-primary"></i>
+          <span class="small text-info fw-semibold">球隊數據分析中心</span>
+        </div>
+        <h1 class="showcase-title h2 mb-1">
+          球隊與球員<span class="text-gradient">數據庫</span>
+        </h1>
+        <p class="text-muted small mb-0">請選擇欲檢視的球隊類型，分析打者與投手在各項賽事中的進階 Sabermetrics 表現</p>
+      </div>
+      <img class="img-fluid showcase-img d-none d-md-block" style="max-height: 120px;" src="{% static '/home.svg' %}" alt="Team Hub" />
+    </div>
+  </div>
+</section>
+
+<!-- Team Selection Cards -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <!-- Card 1: 所屬球隊 -->
+      <div class="col-md-6 col-lg-5">
+        <div class="card h-100 p-4">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg">
+              <i class="fa-solid fa-shield-halved"></i>
             </div>
-            <h3 class="card-title mb-3">所屬球隊</h3>
-            <p class="card-text">
-              根據您先前的比賽記錄，<br>
-              取得您的所屬球隊資料<br><br>
+            <div class="d-inline-block px-3 py-1 rounded-pill mb-2" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 0.8rem; font-weight: 700;">
+              HOME TEAMS
+            </div>
+            <h3 class="card-title fw-bold mb-3">所屬球隊 (主隊)</h3>
+            <p class="card-text text-muted mb-4">
+              依據過往比賽登錄資料，檢視我方球員的累積打擊與投球戰績，全面評估球員近期手感與體能數據。
             </p>
-            <a href="{% url 'hometeam' %}" class="btn btn-primary">點此進入</a>
+            <a href="{% url 'hometeam' %}" class="btn btn-primary w-100 py-2 mt-auto">
+              進入所屬球隊數據庫 <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
           </div>
         </div>
       </div>
-      <div class="col-md">
-        <div class="card bg-secondary text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
-              <i class="bi bi-house"></i>
+
+      <!-- Card 2: 對戰球隊 -->
+      <div class="col-md-6 col-lg-5">
+        <div class="card h-100 p-4">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg icon-box-gold">
+              <i class="fa-solid fa-flag"></i>
             </div>
-            <h3 class="card-title mb-3">對戰球隊</h3>
-            <p class="card-text">
-              根據您先前的比賽記錄，<br>
-              取得您的對戰球隊資料<br><br>
+            <div class="d-inline-block px-3 py-1 rounded-pill mb-2" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 0.8rem; font-weight: 700;">
+              AWAY TEAMS
+            </div>
+            <h3 class="card-title fw-bold mb-3">對戰球隊 (客隊)</h3>
+            <p class="card-text text-muted mb-4">
+              檢視對手隊伍的球員攻守數據，掌握對手核心打線威脅度與投手群球威，制定剋敵致勝戰術。
             </p>
-            <a href="{% url 'awayteam' %}" class="btn btn-dark">點此進入</a>
+            <a href="{% url 'awayteam' %}" class="btn btn-gold w-100 py-2 mt-auto">
+              進入對戰球隊情蒐庫 <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<br>
-<br>
-
 {% endblock %}

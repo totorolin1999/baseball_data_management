@@ -1,37 +1,37 @@
 {% extends 'partials/base.html' %}
 {% block title %} 刪除打擊資料 {% endblock %}
 {% load static %}
+
 {% block content %}
-<br>
-<br>
-<br>
-<!-- Learn Sections -->
-<section id="learn" class="p-5">
-    <div class="container">
-      <div class="row align-items-center justify-content-between">
-        <div class="col-md">
-          <img src="{% static '/manager.svg' %}" class="img-fluid" alt="" />
-        </div>
-        <div class="col-md p-5">
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card p-4 border-danger border-opacity-50">
+          <div class="card-header bg-transparent border-0 text-center pb-0">
+            <div class="icon-box-lg mx-auto mb-3" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="fw-bold text-danger mb-2">確認刪除此筆打擊成績？</h3>
+            <p class="text-muted">您確定要刪除該選手此場比賽的打擊記錄嗎？刪除後相關團隊與個人累計指標將重新計算。</p>
+          </div>
+          <div class="card-body pt-2 text-center">
             <form method="POST">
-                <h2>刪除打擊資料</h2>
-                <br>
-                {% csrf_token %}
-                {{ form }}
-                <p class="lead">
-                    您確定要刪除這筆打擊資料嗎？
-                </p>
-                <!-- <p>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque
-                    reiciendis eius autem eveniet mollitia, at asperiores suscipit
-                    quae similique laboriosam iste minus placeat odit velit quos,
-                    nulla architecto amet voluptates?
-                </p> -->
-                <a href="{% url 'batting' cupvalue.cup_id battingvalue.game_id %}" class="btn btn-secondary">取消</a>
-                <input class="btn btn-danger" type="submit" value="刪除">
+              {% csrf_token %}
+              {{ form }}
+              <div class="d-flex gap-3 justify-content-center mt-4">
+                <a href="{% url 'batting' cupvalue.cup_id battingvalue.game_id %}" class="btn btn-secondary px-4">
+                  <i class="fa-solid fa-arrow-left me-1"></i> 取消返回
+                </a>
+                <button type="submit" class="btn btn-danger px-4">
+                  <i class="fa-solid fa-trash-can me-1"></i> 確認刪除
+                </button>
+              </div>
             </form>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 </section>
 {% endblock %}

@@ -1,34 +1,37 @@
 {% extends 'partials/base.html' %}
-{% block title %} 刪除主隊 {% endblock %}
+{% block title %} 刪除球隊記錄 {% endblock %}
+{% load static %}
 
 {% block content %}
-<br>
-<br>
-<br>
-<br>
-<section class="p-5 m-5">
-    <div class="container">
-        <div class="card text-center">
-            <div class="card-header">
-              刪除主隊
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card p-4 border-danger border-opacity-50">
+          <div class="card-header bg-transparent border-0 text-center pb-0">
+            <div class="icon-box-lg mx-auto mb-3" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+              <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form }}
-                    <h5 class="card-title">您確定要刪除這一筆資料嗎？</h5>
-                    <!-- <p class="card-text">系統在刪除主隊後仍會保留先前所創建之隊伍！</p> -->
-                    <a href="{% url 'hometeam' %}" class="btn btn-secondary">取消</a>
-                    <input class="btn btn-danger" type="submit" value="刪除">
-                </form>
-            </div>
-            <!-- <div class="card-footer text-muted">
-              2 days ago
-            </div> -->
+            <h3 class="fw-bold text-danger mb-2">確認刪除球隊？</h3>
+            <p class="text-muted">您確定要刪除這支球隊嗎？該球隊名下累積的球員數據記錄可能受到影響。</p>
+          </div>
+          <div class="card-body pt-2 text-center">
+            <form method="POST">
+              {% csrf_token %}
+              {{ form }}
+              <div class="d-flex gap-3 justify-content-center mt-4">
+                <a href="{% url 'hometeam' %}" class="btn btn-secondary px-4">
+                  <i class="fa-solid fa-arrow-left me-1"></i> 取消返回
+                </a>
+                <button type="submit" class="btn btn-danger px-4">
+                  <i class="fa-solid fa-trash-can me-1"></i> 確認刪除球隊
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
-<br>
-<br>
-<br>
 {% endblock %}

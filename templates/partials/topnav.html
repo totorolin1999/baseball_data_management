@@ -1,46 +1,79 @@
-<!--Topside-->
-<div class="container">
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    Information
+<!-- Modern Topside Admin Dashboard -->
+<div class="container my-4">
+    <div class="row g-4">
+        <!-- System Announcement Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 p-2">
+                <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">
+                    <span class="badge bg-primary-subtle text-primary p-2 rounded-circle">
+                        <i class="fa-solid fa-bullhorn text-primary"></i>
+                    </span>
+                    <h5 class="mb-0 fw-bold">系統資訊公告</h5>
                 </div>
-                <div class="card-body">
-                    <marquee behavior="" direction="">
-                        <h3 class="my-4">This is the Information</h3>
-                    </marquee>
+                <div class="card-body pt-1">
+                    <div class="p-3 rounded-3" style="background: rgba(59, 130, 246, 0.06); border: 1px dashed rgba(59, 130, 246, 0.25);">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-success">即時狀態</span>
+                            <small class="text-muted">數據引擎運作正常</small>
+                        </div>
+                        <p class="mb-0 text-light fw-medium" style="font-size: 0.95rem;">
+                            棒球數據分析系統已升級至 v2.0，支援完整進階 Sabermetrics 公式自動運算。
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    Statistics
+
+        <!-- Statistics KPI Cards -->
+        <div class="col-lg-8">
+            <div class="card h-100 p-2">
+                <div class="card-header bg-transparent border-0 d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fa-solid fa-chart-pie text-primary me-2"></i>系統資料庫統計概覽
+                    </h5>
+                    <span class="badge bg-secondary">即時數據</span>
                 </div>
-                <div class="card-body">
-                    <div class="row">
+                <div class="card-body pt-1">
+                    <div class="row g-3">
+                        <!-- KPI: 經理人 -->
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="{% url 'manager' %}">
-                                <div class="card my-card shadow text-center p-3">
-                                    <h4>Managers<i class="fas fa-users"></i></h4>
-                                    <h3>{{ managers_count }}</h3>
+                            <a class="text-decoration-none" href="{% url 'manager' %}">
+                                <div class="kpi-card">
+                                    <div>
+                                        <p class="kpi-title">總經理人數</p>
+                                        <div class="kpi-number">{{ managers_count }}</div>
+                                    </div>
+                                    <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                                        <i class="fa-solid fa-users-gear"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
+                        <!-- KPI: 打者數據 -->
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="{% url 'team' %}">
-                                <div class="card my-card shadow text-center p-3">
-                                    <h4>Batters<i class="fas fa-box"></i></h4>
-                                    <h3>{{ battingvalues_count }}</h3>
+                            <a class="text-decoration-none" href="{% url 'team' %}">
+                                <div class="kpi-card">
+                                    <div>
+                                        <p class="kpi-title">打擊紀錄數</p>
+                                        <div class="kpi-number">{{ battingvalues_count }}</div>
+                                    </div>
+                                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                                        <i class="fa-solid fa-baseball-bat-ball"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
+                        <!-- KPI: 投手數據 -->
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="{% url 'team' %}">
-                                <div class="card my-card shadow text-center p-3">
-                                    <h4>Pitcher<i class="fas fa-shipping-fast"></i></h4>
-                                    <h3>{{ pitchingvalues_count }}</h3>
+                            <a class="text-decoration-none" href="{% url 'team' %}">
+                                <div class="kpi-card">
+                                    <div>
+                                        <p class="kpi-title">投球紀錄數</p>
+                                        <div class="kpi-number">{{ pitchingvalues_count }}</div>
+                                    </div>
+                                    <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                                        <i class="fa-solid fa-bullseye"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
@@ -50,4 +83,3 @@
         </div>
     </div>
 </div>
-<!--End Topside-->

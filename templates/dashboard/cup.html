@@ -4,53 +4,107 @@
 {% load static %}
 
 {% block content %}
-<br>
-<!-- Showcase -->
-<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
   <div class="container">
-    <div class="d-sm-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
-        <h1>{{ user.username }}經理人<span class="text-primary">的盃賽記錄</span></h1>
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3);">
+          <i class="fa-solid fa-trophy text-warning"></i>
+          <span class="small text-warning fw-semibold">賽事殿堂</span>
+        </div>
+        <h1 class="showcase-title h2 mb-1">
+          {{ user.username }} 經理人的<span class="text-gradient">盃賽記錄</span>
+        </h1>
+        <p class="text-muted small mb-0">管理參與的各大聯賽與盃賽，記錄每場對抗精彩賽局</p>
       </div>
-      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/trophy.svg' %}" alt="" />
+      <img class="img-fluid showcase-img d-none d-md-block" style="max-height: 120px;" src="{% static '/trophy.svg' %}" alt="Trophy" />
     </div>
   </div>
 </section>
-<!-- Boxes -->
-<section class="pt-5 mt-5 pb-5 mb-5">
+
+<!-- Content Section -->
+<section class="py-5">
   <div class="container">
-    <form class="row gy-2 gx-3 align-items-center" method="POST">
-      {% for message in messages %}
-          {% if message %}
-          <div class="alert alert-{{ message.tags }}" role="alert">
-              {{ message }}
-          </div>
-          {% endif %}
-      {% endfor %}
-      {% csrf_token %}
-      <div class="col-auto">
-        <label class="visually-hidden" for="autoSizingInput">Name</label>
-        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入比賽名稱"> -->
-        {{ cupform.cup_name|as_crispy_field }}
+    {% for message in messages %}
+      {% if message %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-info me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-      <div class="col-auto">
-        <button type="submit" class="btn btn-primary">建立盃賽</button>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Create Cup Form Card -->
+    <div class="form-card mb-5">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="icon-box-lg mb-0" style="width: 40px; height: 40px; font-size: 1.1rem;">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-0">建立新盃賽</h5>
+          <small class="text-muted">輸入賽事或聯賽名稱以建立記錄專案</small>
+        </div>
       </div>
-    </form>
-    <br>
-    <div class="row text-center g-4">
+      <form class="row g-3 align-items-end" method="POST">
+        {% csrf_token %}
+        <div class="col-md-8 col-lg-6">
+          <label class="form-label" for="id_cup_name">盃賽名稱</label>
+          {{ cupform.cup_name|as_crispy_field }}
+        </div>
+        <div class="col-md-4 col-lg-3">
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            <i class="fa-solid fa-trophy me-1"></i> 建立盃賽
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Cup List Cards -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="fw-bold mb-0">
+        <i class="fa-solid fa-list-check text-primary me-2"></i>已建立盃賽清單
+      </h5>
+      <span class="badge bg-secondary">{{ cupvalues|length }} 個盃賽</span>
+    </div>
+
+    <div class="row g-4">
       {% for cupvalue in cupvalues %}
-      <div class="col-md-3">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <div class="h1 mb-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-3">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg icon-box-gold">
               <i class="fa-solid fa-trophy"></i>
             </div>
-            <h3 class="card-title mb-3">{{ cupvalue.cup_name }}</h3>
-            <p class="card-text"></p>
-            <a href="{% url 'game' cupvalue.cup_id %}" class="btn btn-primary">比賽</a>
-            <a class="btn btn-warning" href="{% url 'cup-update' cupvalue.cup_id %}">修改</a>
-            <a class="btn btn-danger" href="{% url 'cup-delete' cupvalue.cup_id %}">刪除</a>
+            <h4 class="card-title fw-bold mb-2">{{ cupvalue.cup_name }}</h4>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle mb-4">
+              盃賽 ID #{{ cupvalue.cup_id }}
+            </span>
+            <div class="mt-auto w-100 pt-3 border-top border-secondary border-opacity-25">
+              <a href="{% url 'game' cupvalue.cup_id %}" class="btn btn-primary w-100 mb-2">
+                <i class="fa-solid fa-baseball me-1"></i> 進入比賽列表
+              </a>
+              <div class="btn-group w-100" role="group">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'cup-update' cupvalue.cup_id %}">
+                  <i class="fa-solid fa-pen-to-square me-1"></i> 修改
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'cup-delete' cupvalue.cup_id %}">
+                  <i class="fa-solid fa-trash-can me-1"></i> 刪除
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card p-5 text-center">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h5 class="fw-bold text-light">目前尚無盃賽記錄</h5>
+            <p class="empty-state-text mb-4">請在上方表單輸入盃賽名稱，立即開始建立您的第一場賽事！</p>
           </div>
         </div>
       </div>
@@ -58,5 +112,4 @@
     </div>
   </div>
 </section>
-
 {% endblock %}

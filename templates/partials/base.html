@@ -1,47 +1,187 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="棒球數據分析系統 - 專業的球員成績管理與進階 Sabermetrics 數據分析平台">
+    <link rel="icon" href="{% static 'home.svg' %}" type="image/svg+xml">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-    <!--Chartjs CDN-->
+    <!-- FontAwesome & Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 
-    <!--Custome CSS-->
+    <!-- Custom Modern Sports CSS -->
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <!-- <link rel="stylesheet" href="/media/style.css"> -->
 
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %} {% endblock %} | 棒球數據分析系統</title>
   </head>
   <body>
     
     {% include 'partials/nav.html' %}
 
-    
-    {% block content %}
-
-    {% endblock %}
+    <main class="main-content">
+      {% block content %}
+      {% endblock %}
+    </main>
 
     {% include 'partials/footer.html' %}
 
-    <!-- Optional JavaScript; choose one of the two! -->
+    <!-- Global Stats Glossary Modal -->
+    <div class="modal fade" id="statsGlossaryModal" tabindex="-1" aria-labelledby="statsGlossaryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="statsGlossaryModalLabel">
+              <i class="fa-solid fa-calculator text-primary me-2"></i>棒球進階數據指標與計算公式指南
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Batting Stats -->
+            <h5 class="text-primary fw-bold mb-3">
+              <i class="fa-solid fa-baseball-bat-ball me-2"></i>打擊指標 (Batting Metrics)
+            </h5>
+            <div class="table-responsive mb-4">
+              <table class="table table-bordered table-sm align-middle">
+                <thead class="table-dark-custom">
+                  <tr>
+                    <th style="width: 15%">指標</th>
+                    <th style="width: 25%">全稱</th>
+                    <th style="width: 30%">計算公式</th>
+                    <th style="width: 30%">說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="badge bg-primary">AVG</span></td>
+                    <td>Batting Average (打擊率)</td>
+                    <td><code>H / AB</code></td>
+                    <td>安打數除以打數，最基礎的安打產出能力。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-primary">OBP</span></td>
+                    <td>On-Base Percentage (上壘率)</td>
+                    <td><code>(H + BB + HBP) / (AB + BB + HBP + SF)</code></td>
+                    <td>衡量打者避免出局、成功站上壘包的比率。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-primary">SLG</span></td>
+                    <td>Slugging Percentage (長打率)</td>
+                    <td><code>Total Bases / AB</code></td>
+                    <td>衡量打者每次打數能推進壘包的能力（一壘打x1+二壘打x2+三壘打x3+全壘打x4）。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-primary">OPS</span></td>
+                    <td>On-Base Plus Slugging (攻擊指數)</td>
+                    <td><code>OBP + SLG</code></td>
+                    <td>綜合上壘與長打破壞力的綜合進攻指標，.800 以上屬優秀水準。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-info text-dark">ISO</span></td>
+                    <td>Isolated Power (純長打率)</td>
+                    <td><code>SLG - AVG</code></td>
+                    <td>剔除一壘安打水分，純粹衡量擊出長打的原始爆發力。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-info text-dark">BABIP</span></td>
+                    <td>Batting Average on Balls In Play</td>
+                    <td><code>(H - HR) / (AB - K - HR + SF)</code></td>
+                    <td>場內擊球形成安打的機率，常搭配運氣與擊球品質分析。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-secondary">BIP%</span></td>
+                    <td>Balls In Play Percentage</td>
+                    <td><code>(AB - K) / PA</code></td>
+                    <td>球打進場內的比率，衡量擊球接觸品質。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-secondary">SO/BB</span></td>
+                    <td>Strikeout to Walk Ratio</td>
+                    <td><code>SO / BB</code></td>
+                    <td>三振與四壞球比，越低代表選球本領越頂尖。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script> -->
+            <!-- Pitching Stats -->
+            <h5 class="text-primary fw-bold mb-3">
+              <i class="fa-solid fa-bullseye me-2"></i>投球指標 (Pitching Metrics)
+            </h5>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm align-middle">
+                <thead class="table-dark-custom">
+                  <tr>
+                    <th style="width: 15%">指標</th>
+                    <th style="width: 25%">全稱</th>
+                    <th style="width: 30%">計算公式</th>
+                    <th style="width: 30%">說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="badge bg-success">ERA</span></td>
+                    <td>Earned Run Average (自責分率/防禦率)</td>
+                    <td><code>(ER * 9) / IP</code></td>
+                    <td>投手平均每九局所失掉的自責分，越低越優。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-success">WHIP</span></td>
+                    <td>Walks plus Hits per IP</td>
+                    <td><code>(BB + H) / IP</code></td>
+                    <td>每局被上壘率，衡量投手壓制打者上壘的穩定度，1.20 以下為優秀。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-info text-dark">K/9</span></td>
+                    <td>Strikeouts per 9 Innings</td>
+                    <td><code>(SO * 9) / IP</code></td>
+                    <td>每九局平均三振次數，衡量投手的奪三振壓制能力。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-info text-dark">BB/9</span></td>
+                    <td>Walks per 9 Innings</td>
+                    <td><code>(BB * 9) / IP</code></td>
+                    <td>每九局平均保送次數，衡量投手的控球準確度。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-secondary">H/9</span></td>
+                    <td>Hits per 9 Innings</td>
+                    <td><code>(H * 9) / IP</code></td>
+                    <td>每九局被擊出安打率。</td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge bg-secondary">HR/9</span></td>
+                    <td>Home Runs per 9 Innings</td>
+                    <td><code>(HR * 9) / IP</code></td>
+                    <td>每九局被擊出全壘打率。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">瞭解，返回系統</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
-    -->
+    <script>
+      // Smooth scroll to top
+      document.querySelectorAll('.scroll-top-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    </script>
   </body>
 </html>

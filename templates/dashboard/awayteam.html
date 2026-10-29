@@ -1,50 +1,101 @@
 {% extends 'partials/base.html' %}
-{% block title %} 選擇對戰球隊 {% endblock %}
+{% block title %} 對戰球隊列表 {% endblock %}
 {% load static %}
 
 {% block content %}
-<br>
-<!-- Showcase -->
-<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
   <div class="container">
-    <div class="d-sm-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
-        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
-        <p class="lead my-4">
-          本網站目的為協助棒球經理人透過數位方式保存球員成績，<br>
-          並且運用基本數據及進階數據有效分析球員能力
-        </p>
+        <nav aria-label="breadcrumb" class="mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'team' %}" class="text-decoration-none text-info"><i class="fa-solid fa-users me-1"></i>球隊中心</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">對戰球隊</li>
+          </ol>
+        </nav>
+        <h1 class="showcase-title h2 mb-1">
+          對戰球隊 <span class="text-gradient">情蒐庫</span>
+        </h1>
+        <p class="text-muted small mb-0">分析過往曾交手的客隊打擊及投手累積表現，知己知彼</p>
       </div>
-      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
+      <img class="img-fluid showcase-img d-none d-md-block" style="max-height: 120px;" src="{% static '/home.svg' %}" alt="Away Teams" />
     </div>
   </div>
 </section>
-<!-- Boxes -->
-<section class="p-5">
+
+<!-- Content Section -->
+<section class="py-5">
   <div class="container">
-    <div class="row text-center g-4">
-      {% for message in messages %}
-          {% if message %}
-          <div class="alert alert-{{ message.tags }}" role="alert">
-              {{ message }}
-          </div>
-          {% endif %}
-      {% endfor %}
+    {% for message in messages %}
+      {% if message %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-info me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h5 class="fw-bold mb-0">
+        <i class="fa-solid fa-flag text-warning me-2"></i>對戰球隊清單 ({{ teamvalues|length }} 隊)
+      </h5>
+      <a href="{% url 'cup' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fa-solid fa-plus me-1"></i> 建立新賽事球隊
+      </a>
+    </div>
+
+    <div class="row g-4">
       {% for teamvalue in teamvalues %}
-      <div class="col-md-3">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <h3 class="card-title mb-3">{{ teamvalue.team_name }}</h3>
-            <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-info">打者</a>
-            <a href="{% url 'pitcher' teamvalue.team_id %}" class="btn btn-info">投手</a>
-            <a class="btn btn-warning" href="{% url 'hometeam-update' teamvalue.team_id %}">修改</a>
-            <a class="btn btn-danger" href="{% url 'hometeam-delete' teamvalue.team_id %}">刪除</a>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-3">
+          <div class="card-body text-center d-flex flex-column align-items-center">
+            <div class="icon-box-lg icon-box-gold mb-3">
+              <i class="fa-solid fa-flag"></i>
+            </div>
+            <h4 class="card-title fw-bold mb-2">{{ teamvalue.team_name }}</h4>
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-4">
+              球隊 ID #{{ teamvalue.team_id }}
+            </span>
+            <div class="w-100 mt-auto pt-3 border-top border-secondary border-opacity-25">
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-gold w-100 btn-sm py-2">
+                    <i class="fa-solid fa-baseball-bat-ball me-1"></i> 打者數據
+                  </a>
+                </div>
+                <div class="col-6">
+                  <a href="{% url 'pitcher' teamvalue.team_id %}" class="btn btn-info w-100 btn-sm py-2">
+                    <i class="fa-solid fa-bullseye me-1"></i> 投手數據
+                  </a>
+                </div>
+              </div>
+              <div class="btn-group w-100" role="group">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'hometeam-update' teamvalue.team_id %}">
+                  <i class="fa-solid fa-pen-to-square me-1"></i> 修改
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'hometeam-delete' teamvalue.team_id %}">
+                  <i class="fa-solid fa-trash-can me-1"></i> 刪除
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       {% empty %}
-      <div class="col-12 text-center text-muted">
-        <p>目前尚無對戰球隊資料，請至「盃賽記錄」建立比賽！</p>
+      <div class="col-12">
+        <div class="card p-5 text-center">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fa-solid fa-flag"></i>
+            </div>
+            <h5 class="fw-bold text-light">目前尚無對戰球隊資料</h5>
+            <p class="empty-state-text mb-4">請先前往「盃賽記錄」新增比賽，建立對戰球隊賽程！</p>
+            <a href="{% url 'cup' %}" class="btn btn-primary px-4">
+              <i class="fa-solid fa-trophy me-1"></i> 前往盃賽記錄
+            </a>
+          </div>
+        </div>
       </div>
       {% endfor %}
     </div>

@@ -1,78 +1,160 @@
 {% extends 'partials/base.html' %}
-{% block title %} 比賽 {% endblock %}
+{% block title %} {{ cupvalue.cup_name }} - 比賽列表 {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
-<br>
-<!-- Showcase -->
-<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+<!-- Modern Showcase -->
+<section class="showcase-section py-4">
   <div class="container">
-    <div class="d-sm-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
-        <h1>{{ cupvalue.cup_name }}<span class="text-primary">的比賽記錄</span></h1>
+        <nav aria-label="breadcrumb" class="mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'cup' %}" class="text-decoration-none text-info"><i class="fa-solid fa-trophy me-1"></i>盃賽列表</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ cupvalue.cup_name }}</li>
+          </ol>
+        </nav>
+        <h1 class="showcase-title h2 mb-1">
+          {{ cupvalue.cup_name }} <span class="text-gradient">比賽賽程</span>
+        </h1>
+        <p class="text-muted small mb-0">紀錄每場賽事對壘隊伍，並進行打者與投手詳細數據登打</p>
       </div>
-      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/laptop.svg' %}" alt="" />
+      <img class="img-fluid showcase-img d-none d-md-block" style="max-height: 120px;" src="{% static '/laptop.svg' %}" alt="Game Matches" />
     </div>
   </div>
 </section>
-<!-- Boxes -->
-<section class="pt-5 mt-5 pb-5 mb-5">
+
+<!-- Content Section -->
+<section class="py-5">
   <div class="container">
-    <form class="row gy-2 gx-3 align-items-center" method="POST">
-      {% for message in messages %}
-          {% if message %}
-          <div class="alert alert-{{ message.tags }}" role="alert">
-              {{ message }}
-          </div>
-          {% endif %}
-      {% endfor %}
-      {% csrf_token %}
-      <div class="col-auto">
-        <label class="visually-hidden" for="autoSizingInput">Name</label>
-        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入比賽名稱"> -->
-        {{ gameform.game_name|as_crispy_field }}
+    {% for message in messages %}
+      {% if message %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-info me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-      <div class="col-auto">
-        <label class="visually-hidden" for="autoSizingInput">Name</label>
-        <!-- <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入所屬球隊"> -->
-        <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入所屬球隊" name="hometeam" required>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Create Game Form Card -->
+    <div class="form-card mb-5">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="icon-box-lg mb-0" style="width: 40px; height: 40px; font-size: 1.1rem;">
+          <i class="fa-solid fa-calendar-plus"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-0">新增賽事對戰</h5>
+          <small class="text-muted">設定比賽名稱及對壘的主客隊伍</small>
+        </div>
       </div>
-      <div class="col-auto">
-        <label class="visually-hidden" for="autoSizingInput">Name</label>
-        <input type="text" class="form-control" id="autoSizingInput" placeholder="輸入對戰球隊" name="awayteam" required>
-      </div>
-      <div class="col-auto">
-        <button type="submit" class="btn btn-primary">建立比賽</button>
-      </div>
-    </form>
-    <br>
-    <div class="row text-center g-4">
+      <form class="row g-3 align-items-end" method="POST">
+        {% csrf_token %}
+        <div class="col-md-4">
+          <label class="form-label" for="id_game_name">比賽名稱</label>
+          {{ gameform.game_name|as_crispy_field }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="hometeamInput">所屬球隊 (主隊)</label>
+          <input type="text" class="form-control" id="hometeamInput" placeholder="輸入主隊名稱" name="hometeam" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="awayteamInput">對戰球隊 (客隊)</label>
+          <input type="text" class="form-control" id="awayteamInput" placeholder="輸入客隊名稱" name="awayteam" required>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            <i class="fa-solid fa-plus me-1"></i> 建立比賽
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Game List -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="fw-bold mb-0">
+        <i class="fa-solid fa-baseball text-primary me-2"></i>比賽列表
+      </h5>
+      <span class="badge bg-secondary">{{ gamevalues|length }} 場比賽</span>
+    </div>
+
+    <div class="row g-4">
       {% for gamevalue in gamevalues %}
-      <div class="col-md-4">
-        <div class="card bg-dark text-light">
-          <div class="card-body text-center">
-            <!-- <div class="h1 mb-3">
-              <i class="bi bi-laptop"></i>
-            </div> -->
-            <h3 class="card-title mb-3">{{ gamevalue.game_name }}</h3>
-            <p class="card-text">
-            {% for hometeam_gamevalue in hometeam_gamevalues %}
-              {% if hometeam_gamevalue.game_id == gamevalue.game_id %}
-                {{ hometeam_gamevalue.team.team_name }}
-              {% endif  %}
-            {% endfor %}
-            VS
-            {% for awayteam_gamevalue in awayteam_gamevalues %}
-              {% if awayteam_gamevalue.game_id == gamevalue.game_id %}
-                {{ awayteam_gamevalue.team.team_name }}
-              {% endif  %}
-            {% endfor %}
-            </p>
-            <a href="{% url 'batting' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-primary">打者</a>
-            <a href="{% url 'pitching' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-primary">投手</a>
-            <a class="btn btn-warning" href="{% url 'game-update' cupvalue.cup_id gamevalue.game_id %}">修改</a>
-            <a class="btn btn-danger" href="{% url 'game-delete' cupvalue.cup_id gamevalue.game_id %}">刪除</a>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-3">
+          <div class="card-body d-flex flex-column text-center">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="badge bg-secondary">Game #{{ gamevalue.game_id }}</span>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'game-update' cupvalue.cup_id gamevalue.game_id %}">
+                      <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>修改名稱
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item text-danger" href="{% url 'game-delete' cupvalue.cup_id gamevalue.game_id %}">
+                      <i class="fa-solid fa-trash-can me-2"></i>刪除比賽
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <h4 class="card-title fw-bold mb-3">{{ gamevalue.game_name }}</h4>
+
+            <!-- Teams VS Box -->
+            <div class="p-3 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color);">
+              <div class="d-flex align-items-center justify-content-center gap-2">
+                <span class="fw-bold text-info" style="font-size: 1.05rem;">
+                  {% for hometeam_gamevalue in hometeam_gamevalues %}
+                    {% if hometeam_gamevalue.game_id == gamevalue.game_id %}
+                      {{ hometeam_gamevalue.team.team_name }}
+                    {% endif %}
+                  {% endfor %}
+                </span>
+                <span class="match-vs-badge">VS</span>
+                <span class="fw-bold text-warning" style="font-size: 1.05rem;">
+                  {% for awayteam_gamevalue in awayteam_gamevalues %}
+                    {% if awayteam_gamevalue.game_id == gamevalue.game_id %}
+                      {{ awayteam_gamevalue.team.team_name }}
+                    {% endif %}
+                  {% endfor %}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-auto pt-2">
+              <div class="row g-2">
+                <div class="col-6">
+                  <a href="{% url 'batting' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-primary w-100">
+                    <i class="fa-solid fa-baseball-bat-ball me-1"></i> 打者記錄
+                  </a>
+                </div>
+                <div class="col-6">
+                  <a href="{% url 'pitching' cupvalue.cup_id gamevalue.game_id %}" class="btn btn-secondary w-100">
+                    <i class="fa-solid fa-bullseye me-1"></i> 投手記錄
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card p-5 text-center">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fa-solid fa-baseball-bat-ball"></i>
+            </div>
+            <h5 class="fw-bold text-light">此盃賽尚未建立任何比賽</h5>
+            <p class="empty-state-text mb-4">請在上方輸入比賽名稱與對戰雙方球隊，即可開始記錄比賽！</p>
           </div>
         </div>
       </div>
@@ -80,5 +162,4 @@
     </div>
   </div>
 </section>
-
 {% endblock %}
