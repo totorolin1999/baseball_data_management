@@ -19,7 +19,7 @@
   - [7. 啟動伺服器](#7-啟動伺服器)
 - [資料庫結構與關聯](#-資料庫結構與關聯-database-schema)
 - [專案結構](#-專案結構-project-structure)
-- [授權與聲明](#-授權與聲明-license)
+- [授權條款](#-授權條款-license)
 
 ---
 
@@ -192,6 +192,6 @@ baseball_data_management/
 
 ---
 
-## 📄 授權與聲明 (License)
+## 📄 授權條款 (License)
 
-本專案供學習與管理使用。如有任何改進建議或問題回報，歡迎提交 Issue 或 Pull Request！
+本專案基於 [MIT License](LICENSE) 條款開放原始碼。
