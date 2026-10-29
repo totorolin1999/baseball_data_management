@@ -16,7 +16,6 @@
         </p>
       </div>
       <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
-      <!-- <img class="img-fluid w-50 d-none d-sm-block" src="/media/home.svg" alt="" /> -->
     </div>
   </div>
 </section>
@@ -32,28 +31,21 @@
           {% endif %}
       {% endfor %}
       {% for teamvalue in teamvalues %}
-        {% for team_gamevalue in team_gamevalues %}
-          {% if teamvalue.team_id == team_gamevalue.team_id %}
-          {% ifchanged teamvalue.team_name %}
-          <div class="col-md-3">
-            <div class="card bg-dark text-light">
-              <div class="card-body text-center">
-                <!-- <div class="h1 mb-3">
-                  <i class="bi bi-house-fill"></i>
-                </div> -->
-                <h3 class="card-title mb-3">{{ teamvalue.team_name }}</h3>
-                <!-- <p class="card-text">
-                  文字說明
-                </p> -->
-                <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-info">打者</a>
-                <a href="#" class="btn btn-info">投手</a>
-                <a class="btn btn-warning" href="{% url 'hometeam-update' teamvalue.team_id %}">修改</a>
-              </div>
-            </div>
+      <div class="col-md-3">
+        <div class="card bg-dark text-light">
+          <div class="card-body text-center">
+            <h3 class="card-title mb-3">{{ teamvalue.team_name }}</h3>
+            <a href="{% url 'batter' teamvalue.team_id %}" class="btn btn-info">打者</a>
+            <a href="{% url 'pitcher' teamvalue.team_id %}" class="btn btn-info">投手</a>
+            <a class="btn btn-warning" href="{% url 'hometeam-update' teamvalue.team_id %}">修改</a>
+            <a class="btn btn-danger" href="{% url 'hometeam-delete' teamvalue.team_id %}">刪除</a>
           </div>
-          {% endifchanged %}
-          {% endif  %}
-        {% endfor %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted">
+        <p>目前尚無所屬球隊資料，請至「盃賽記錄」建立比賽！</p>
+      </div>
       {% endfor %}
     </div>
   </div>

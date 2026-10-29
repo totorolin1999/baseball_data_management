@@ -1,85 +1,162 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Cup, Player, Game, Team, Team_Cup, Team_Game, Team_Player, Batting, Pitching
-from .forms import CupForm, PlayerForm, GameForm, TeamForm, Team_GameForm, Team_PlayerForm, BattingForm, PitchingForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.core.paginator import Paginator
+from django.db.models import Sum
 
-# Create your views here.
+from .models import Cup, Player, Game, Team, Team_Cup, Team_Game, Team_Player, Batting, Pitching
+from .forms import CupForm, PlayerForm, GameForm, TeamForm, BattingForm, PitchingForm
 
+
+def calculate_batting_stats(b_pa, b_single, b_double, b_triple, b_hr, b_bb, b_ibb, b_hbp, b_so, b_sh, b_sf):
+    """計算打擊進階數據，避免除以零異常"""
+    ab = b_pa - (b_bb + b_hbp + b_sf + b_sh)
+    h = b_single + b_double + b_triple + b_hr
+    tb = b_single + (2 * b_double) + (3 * b_triple) + (4 * b_hr)
+
+    avg = (h / ab) if ab > 0 else 0.0
+
+    obp_denom = ab + b_bb + b_hbp + b_sf
+    obp = ((h + b_bb + b_hbp) / obp_denom) if obp_denom > 0 else 0.0
+
+    slg = (tb / ab) if ab > 0 else 0.0
+    ops = obp + slg
+    iso = slg - avg
+
+    babip_denom = ab - b_so - b_hr + b_sf
+    babip = ((h - b_hr) / babip_denom) if babip_denom > 0 else 0.0
+
+    bip = (babip_denom / obp_denom * 100) if obp_denom > 0 else 0.0
+
+    unintentional_bb = max(b_bb - b_ibb, 0)
+    bbp = (unintentional_bb / b_pa * 100) if b_pa > 0 else 0.0
+    sobb = (b_so / unintentional_bb) if unintentional_bb > 0 else 0.0
+    sop = (b_so / b_pa * 100) if b_pa > 0 else 0.0
+
+    return {
+        'pa': b_pa,
+        'ab': ab,
+        'h': h,
+        'avg': f'{avg:.3f}',
+        'obp': f'{obp:.3f}',
+        'slg': f'{slg:.3f}',
+        'ops': f'{ops:.3f}',
+        'iso': f'{iso:.3f}',
+        'babip': f'{babip:.3f}',
+        'bip': f'{bip:.1f}',
+        'bbp': f'{bbp:.1f}',
+        'sobb': f'{sobb:.3f}',
+        'sop': f'{sop:.1f}',
+    }
+
+
+def calculate_pitching_stats(p_ip, p_single, p_double, p_triple, p_hr, p_bb, p_so, p_er):
+    """計算投球進階數據，避免除以零異常"""
+    h = p_single + p_double + p_triple + p_hr
+
+    if p_ip > 0:
+        era = (p_er * 9.0) / p_ip
+        whip = (h + p_bb) / float(p_ip)
+        h9 = (h * 9.0) / p_ip
+        hr9 = (p_hr * 9.0) / p_ip
+        bb9 = (p_bb * 9.0) / p_ip
+        so9 = (p_so * 9.0) / p_ip
+    else:
+        era = whip = h9 = hr9 = bb9 = so9 = 0.0
+
+    return {
+        'ip': p_ip,
+        'er': p_er,
+        'h': h,
+        'bb': p_bb,
+        'so': p_so,
+        'era': f'{era:.3f}',
+        'whip': f'{whip:.3f}',
+        'h9': f'{h9:.3f}',
+        'hr9': f'{hr9:.3f}',
+        'bb9': f'{bb9:.3f}',
+        'so9': f'{so9:.3f}',
+    }
+
+
+# ==============================
+# 首頁與球隊管理視圖
+# ==============================
 
 @login_required
 def index(request):
     return render(request, 'dashboard/index.html')
 
+
 @login_required
 def team(request):
     return render(request, 'dashboard/team.html')
 
+
 @login_required
 def hometeam(request):
-    teamvalues = Team.objects.filter(user_id=request.user.id)
-    team_gamevalues = Team_Game.objects.filter(team_role="hometeam")
-
+    teamvalues = Team.objects.filter(user=request.user, team_game__team_role="hometeam").distinct()
     context = {
         'teamvalues': teamvalues,
-        'team_gamevalues': team_gamevalues,
     }
     return render(request, 'dashboard/hometeam.html', context)
 
+
 @login_required
 def awayteam(request):
-    teamvalues = Team.objects.filter(user_id=request.user.id)
-    team_gamevalues = Team_Game.objects.filter(team_role="awayteam")
-
+    teamvalues = Team.objects.filter(user=request.user, team_game__team_role="awayteam").distinct()
     context = {
         'teamvalues': teamvalues,
-        'team_gamevalues': team_gamevalues,
     }
     return render(request, 'dashboard/awayteam.html', context)
 
+
 @login_required
 def hometeam_delete(request, team_id):
-    hometeamvalue = Team.objects.get(team_id=team_id)
+    teamvalue = get_object_or_404(Team, team_id=team_id, user=request.user)
+    team_name = teamvalue.team_name
     if request.method == 'POST':
-        hometeamvalue.delete()
+        teamvalue.delete()
+        messages.success(request, f'您已成功刪除「{team_name}」球隊資料')
         return redirect('hometeam')
-    return render(request, 'dashboard/hometeam_delete.html')
+    return render(request, 'dashboard/hometeam_delete.html', {'hometeamvalue': teamvalue})
+
 
 @login_required
 def hometeam_update(request, team_id):
-    hometeamvalue = Team.objects.get(team_id=team_id)
-    team_name1 = hometeamvalue.team_name
+    teamvalue = get_object_or_404(Team, team_id=team_id, user=request.user)
+    team_name1 = teamvalue.team_name
     if request.method == 'POST':
-        hometeamform = TeamForm(request.POST, instance=hometeamvalue)
+        hometeamform = TeamForm(request.POST, instance=teamvalue)
         if hometeamform.is_valid():
             hometeamform.save()
-            team_name2 = hometeamvalue.team_name
+            team_name2 = teamvalue.team_name
             messages.success(request, f'您已成功將「{team_name1}」的球隊名稱修改為「{team_name2}」')
             return redirect('hometeam')
     else:
-        hometeamform = TeamForm(instance=hometeamvalue)
+        hometeamform = TeamForm(instance=teamvalue)
     context = {
         'hometeamform': hometeamform,
+        'teamvalue': teamvalue,
     }
     return render(request, 'dashboard/hometeam_update.html', context)
 
+
+# ==============================
+# 盃賽 (Cup) 管理視圖
+# ==============================
+
 @login_required
 def cup(request):
-
-    cupvalues = Cup.objects.filter(user_id=request.user.id).order_by('-cup_id')
+    cupvalues = Cup.objects.filter(user=request.user).order_by('-cup_id')
 
     if request.method == 'POST':
         cupform = CupForm(request.POST)
-
         if cupform.is_valid():
             cupobj = cupform.save(commit=False)
             cupobj.user = request.user
             cupobj.save()
-            cup_name = cupobj.cup_name
-            messages.success(request, f'您已成功新增「{cup_name}」的盃賽記錄')
+            messages.success(request, f'您已成功新增「{cupobj.cup_name}」的盃賽記錄')
             return redirect('cup')
     else:
         cupform = CupForm()
@@ -89,19 +166,21 @@ def cup(request):
     }
     return render(request, 'dashboard/cup.html', context)
 
+
 @login_required
 def cup_delete(request, cup_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
     cup_name = cupvalue.cup_name
     if request.method == 'POST':
         cupvalue.delete()
         messages.success(request, f'您已成功刪除「{cup_name}」的盃賽記錄')
         return redirect('cup')
-    return render(request, 'dashboard/cup_delete.html')
+    return render(request, 'dashboard/cup_delete.html', {'cupvalue': cupvalue})
+
 
 @login_required
 def cup_update(request, cup_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
     cup_name1 = cupvalue.cup_name
     if request.method == 'POST':
         cupform = CupForm(request.POST, instance=cupvalue)
@@ -114,78 +193,45 @@ def cup_update(request, cup_id):
         cupform = CupForm(instance=cupvalue)
     context = {
         'cupform': cupform,
+        'cupvalue': cupvalue,
     }
     return render(request, 'dashboard/cup_update.html', context)
 
-def saveTG(team_id,game_id,team_role):
-    team_gameform = Team_GameForm()
-    team_gameobj = team_gameform.save(commit=False)
-    team_gameobj.team_id = team_id
-    team_gameobj.game_id = game_id
-    team_gameobj.team_role = team_role
-    team_gameobj.save()
+
+# ==============================
+# 比賽 (Game) 管理視圖
+# ==============================
 
 @login_required
 def game(request, cup_id):
-
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    gamevalues = Game.objects.filter(cup_id=cup_id)
-    hometeam_gamevalues = Team_Game.objects.filter(team_role="hometeam")
-    awayteam_gamevalues = Team_Game.objects.filter(team_role="awayteam")
-    # teamvalues = Team.objects.filter(Cups=cup_id)
-    # for gamevalue in gamevalues:
-    #     for hometeamvalue in hometeam_gamevalues.filter(game_id=gamevalue.game_id):
-    #         print(hometeamvalue.team.team_name)
-        # print(gamevalue.game_name)
-        # for teamvalue in teamvalues:
-        #     if teamvalue.Games.filter(game_id=gamevalue.game_id).exists():
-        #         print(teamvalue.team_name)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalues = Game.objects.filter(cup=cupvalue).order_by('-game_id')
+    hometeam_gamevalues = Team_Game.objects.filter(game__cup=cupvalue, team_role="hometeam")
+    awayteam_gamevalues = Team_Game.objects.filter(game__cup=cupvalue, team_role="awayteam")
 
     if request.method == 'POST':
         gameform = GameForm(request.POST)
-        hometeam = request.POST.get('hometeam')
-        awayteam = request.POST.get('awayteam')
-        team_names=[hometeam, awayteam]
+        hometeam_name = (request.POST.get('hometeam') or '').strip()
+        awayteam_name = (request.POST.get('awayteam') or '').strip()
 
-        if gameform.is_valid():
+        if gameform.is_valid() and hometeam_name and awayteam_name:
             gameobj = gameform.save(commit=False)
-            gameobj.user = request.user
-            gameobj.cup_id = cup_id
+            gameobj.cup = cupvalue
             gameobj.save()
-            game_id = gameobj.game_id
-            game_name = gameobj.game_name
 
-            team_role = 'hometeam'
-            for team_name in team_names:
-                if Team.objects.filter(user_id=request.user.id,team_name=team_name).exists():
-                    teamvalue = Team.objects.filter(user_id=request.user.id,team_name=team_name).last()
-                    team_id=teamvalue.team_id
-                    if Team_Cup.objects.filter(cup_id=cup_id,team_id=team_id).exists():
-                        saveTG(team_id,game_id,team_role)
-                    else:
-                        team_cup = Team_Cup(cup_id=cup_id,team_id=team_id)
-                        team_cup.save()
-                        saveTG(team_id,game_id,team_role)
-                else:
-                    teamform = TeamForm()
-                    teamobj = teamform.save(commit=False)
-                    teamobj.team_name = team_name
-                    teamobj.user = request.user
-                    teamobj.save()
-                    team_id = teamobj.team_id
-                    team_cup = Team_Cup(cup_id=cup_id,team_id=team_id)
-                    team_cup.save()
-                    saveTG(team_id,game_id,team_role)
+            for team_role, team_name in (('hometeam', hometeam_name), ('awayteam', awayteam_name)):
+                team_obj, _ = Team.objects.get_or_create(user=request.user, team_name=team_name)
+                Team_Cup.objects.get_or_create(cup=cupvalue, team=team_obj)
+                Team_Game.objects.get_or_create(game=gameobj, team=team_obj, team_role=team_role)
 
-                team_role = 'awayteam'
-
-            messages.success(request, f'您已成功新增「{game_name}」的比賽記錄')
+            messages.success(request, f'您已成功新增「{gameobj.game_name}」的比賽記錄')
             return redirect('game', cup_id=cup_id)
+        else:
+            messages.warning(request, '請確認比賽名稱與兩隊隊名皆已填寫！')
     else:
-        teamform = TeamForm()
         gameform = GameForm()
+
     context = {
-        'teamform': teamform,
         'gameform': gameform,
         'cupvalue': cupvalue,
         'gamevalues': gamevalues,
@@ -194,10 +240,11 @@ def game(request, cup_id):
     }
     return render(request, 'dashboard/game.html', context)
 
+
 @login_required
 def game_delete(request, cup_id, game_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    gamevalue = Game.objects.get(game_id=game_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
     game_name = gamevalue.game_name
     if request.method == 'POST':
         gamevalue.delete()
@@ -205,13 +252,15 @@ def game_delete(request, cup_id, game_id):
         return redirect('game', cup_id=cup_id)
     context = {
         'cupvalue': cupvalue,
+        'gamevalue': gamevalue,
     }
     return render(request, 'dashboard/game_delete.html', context)
 
+
 @login_required
 def game_update(request, cup_id, game_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    gamevalue = Game.objects.get(game_id=game_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
     game_name1 = gamevalue.game_name
     if request.method == 'POST':
         gameform = GameForm(request.POST, instance=gamevalue)
@@ -224,116 +273,153 @@ def game_update(request, cup_id, game_id):
         gameform = GameForm(instance=gamevalue)
     context = {
         'cupvalue': cupvalue,
+        'gamevalue': gamevalue,
         'gameform': gameform,
     }
     return render(request, 'dashboard/game_update.html', context)
 
 
+# ==============================
+# 球隊選手累計數據 (打者 / 投手)
+# ==============================
+
 @login_required
 def batter(request, team_id):
-    # team_playervalues = Team_Player.objects.filter(team_id=team_id)
-    # battingvalues = Batting.objects.filter(team_id=3)
-    # for team_playervalue in team_playervalues:
-    #     battingvalues = Batting.objects.filter(player_id=team_playervalue.player_id, team_id=team_id)
-    #     for battingvalue in battingvalues:
-    #         print(battingvalue.player.player_name)
+    teamvalue = get_object_or_404(Team, team_id=team_id, user=request.user)
+    players = Player.objects.filter(batting__team=teamvalue).distinct()
+    players_stats = []
+
+    for player in players:
+        totals = Batting.objects.filter(team=teamvalue, player=player).aggregate(
+            pa=Sum('b_pa'), single=Sum('b_single'), double=Sum('b_double'),
+            triple=Sum('b_triple'), hr=Sum('b_hr'), bb=Sum('b_bb'),
+            ibb=Sum('b_ibb'), hbp=Sum('b_hbp'), so=Sum('b_so'),
+            sh=Sum('b_sh'), sf=Sum('b_sf')
+        )
+        stats = calculate_batting_stats(
+            totals['pa'] or 0, totals['single'] or 0, totals['double'] or 0,
+            totals['triple'] or 0, totals['hr'] or 0, totals['bb'] or 0,
+            totals['ibb'] or 0, totals['hbp'] or 0, totals['so'] or 0,
+            totals['sh'] or 0, totals['sf'] or 0
+        )
+        stats['name'] = player.player_name
+        players_stats.append(stats)
+
     context = {
+        'teamvalue': teamvalue,
+        'players_stats': players_stats,
     }
     return render(request, 'dashboard/batter.html', context)
 
-@login_required
-def pitcher(request):
-    return render(request, 'dashboard/pitcher.html')
 
+@login_required
+def pitcher(request, team_id=None):
+    if team_id is None:
+        return redirect('team')
+
+    teamvalue = get_object_or_404(Team, team_id=team_id, user=request.user)
+    players = Player.objects.filter(pitching__team=teamvalue).distinct()
+    pitchers_stats = []
+
+    for player in players:
+        totals = Pitching.objects.filter(team=teamvalue, player=player).aggregate(
+            ip=Sum('p_ip'), single=Sum('p_single'), double=Sum('p_double'),
+            triple=Sum('p_triple'), hr=Sum('p_hr'), bb=Sum('p_bb'),
+            so=Sum('p_so'), er=Sum('p_er')
+        )
+        stats = calculate_pitching_stats(
+            totals['ip'] or 0, totals['single'] or 0, totals['double'] or 0,
+            totals['triple'] or 0, totals['hr'] or 0, totals['bb'] or 0,
+            totals['so'] or 0, totals['er'] or 0
+        )
+        stats['name'] = player.player_name
+        pitchers_stats.append(stats)
+
+    context = {
+        'teamvalue': teamvalue,
+        'pitchers_stats': pitchers_stats,
+    }
+    return render(request, 'dashboard/pitcher.html', context)
+
+
+# ==============================
+# 經理人管理視圖 (Admin / Staff)
+# ==============================
 
 @login_required
 def manager(request):
     managers = User.objects.all()
-    managers_count = managers.count()
     context = {
         'managers': managers,
-        'managers_count': managers_count,
+        'managers_count': managers.count(),
     }
     return render(request, 'dashboard/manager.html', context)
 
 
 @login_required
 def manager_detail(request, pk):
-    managers = User.objects.get(id=pk)
-    context = {
-        'managers': managers
-    }
-    return render(request, 'dashboard/manager_detail.html', context)
+    manager_obj = get_object_or_404(User, id=pk)
+    return render(request, 'dashboard/manager_detail.html', {'managers': manager_obj})
 
-def battingSaveTP(team_id,player_id):
-    team_playerform = Team_PlayerForm()
-    team_playerobj = team_playerform.save(commit=False)
-    team_playerobj.team_id = team_id
-    team_playerobj.player_id = player_id
-    team_playerobj.save()
 
-def battingSaveGP(battingform,game_id,team_id,player_id,player_order,player_role):
-    battingobj = battingform.save(commit=False)
-    battingobj.game_id = game_id
-    battingobj.team_id = team_id
-    battingobj.player_id = player_id
-    battingobj.player_order = player_order
-    battingobj.player_role = player_role
-    battingobj.save()
+# ==============================
+# 單場打擊成績 (Batting)
+# ==============================
 
 @login_required
 def batting(request, cup_id, game_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="hometeam")
-    hometeamvalue = team_gamevalue.team
-    gamevalue = team_gamevalue.game
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="awayteam")
-    awayteamvalue = team_gamevalue.team
-    hometeam_playervalues = Team_Player.objects.filter(team_id=hometeamvalue.team_id)
-    awayteam_playervalues = Team_Player.objects.filter(team_id=awayteamvalue.team_id)
-    hometeam_battingvalues = Batting.objects.filter(game_id=game_id,team_id=hometeamvalue.team_id).order_by('player_order')
-    awayteam_battingvalues = Batting.objects.filter(game_id=game_id,team_id=awayteamvalue.team_id).order_by('player_order')
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+
+    hometeam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="hometeam")
+    awayteam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="awayteam")
+    hometeamvalue = hometeam_gamevalue.team
+    awayteamvalue = awayteam_gamevalue.team
+
+    hometeam_playervalues = Team_Player.objects.filter(team=hometeamvalue)
+    awayteam_playervalues = Team_Player.objects.filter(team=awayteamvalue)
+    hometeam_battingvalues = Batting.objects.filter(game=gamevalue, team=hometeamvalue).order_by('player_order')
+    awayteam_battingvalues = Batting.objects.filter(game=gamevalue, team=awayteamvalue).order_by('player_order')
 
     if request.method == 'POST':
         playerform = PlayerForm(request.POST)
         battingform = BattingForm(request.POST)
-        player_id = request.POST.get('player_id')
-        team_id = request.POST.get('team_id')
+        player_id = (request.POST.get('player_id') or '').strip()
+        team_id = (request.POST.get('team_id') or '').strip()
         player_order = request.POST.get('player_order')
         player_role = request.POST.get('player_role')
-        if playerform.is_valid() and battingform.is_valid():
-            player_name = playerform.cleaned_data.get('player_name')
-            if player_id != "":
-                try:
-                    battingvalue = Batting.objects.get(game_id=game_id,player_id=player_id)
-                    messages.success(request, f'您先前已建立過「{battingvalue.player.player_name}」的本場成績')
+
+        if playerform.is_valid() and battingform.is_valid() and team_id:
+            team_obj = get_object_or_404(Team, team_id=team_id)
+
+            if player_id:
+                player_obj = get_object_or_404(Player, player_id=player_id)
+                if Batting.objects.filter(game=gamevalue, player=player_obj).exists():
+                    messages.warning(request, f'您先前已建立過「{player_obj.player_name}」的本場成績')
                     return redirect('batting', cup_id=cup_id, game_id=game_id)
-                except:
-                    try:
-                        team_playervalue = Team_Player.objects.get(team_id=team_id,player_id=player_id)
-                        battingSaveGP(battingform,game_id,team_id,player_id,player_order,player_role)
-                        messages.success(request, f'您已成功新增「{team_playervalue.player.player_name}」的本場成績')
-                        return redirect('batting', cup_id=cup_id, game_id=game_id)
-                    except:
-                        battingSaveTP(team_id,player_id)
-                        battingSaveGP(battingform,game_id,team_id,player_id,player_order,player_role)
-                        team_playervalue = Team_Player.objects.get(team_id=team_id,player_id=player_id)
-                        messages.success(request, f'您已成功新增「{team_playervalue.player.player_name}」的本場成績')
-                        return redirect('batting', cup_id=cup_id, game_id=game_id)
-            elif player_id == "":
-                playerobj = playerform.save(commit=False)
-                playerobj.save()
-                player_id = playerobj.player_id
-                battingSaveTP(team_id,player_id)
-                battingSaveGP(battingform,game_id,team_id,player_id,player_order,player_role)
-                messages.success(request, f'您已成功建立「{player_name}」的本場成績')
-                return redirect('batting', cup_id=cup_id, game_id=game_id)
+            else:
+                player_name = playerform.cleaned_data.get('player_name')
+                player_obj = Player.objects.create(player_name=player_name)
+
+            Team_Player.objects.get_or_create(team=team_obj, player=player_obj)
+
+            battingobj = battingform.save(commit=False)
+            battingobj.game = gamevalue
+            battingobj.team = team_obj
+            battingobj.player = player_obj
+            battingobj.player_order = player_order
+            battingobj.player_role = player_role
+            battingobj.save()
+
+            messages.success(request, f'您已成功新增「{player_obj.player_name}」的本場成績')
+            return redirect('batting', cup_id=cup_id, game_id=game_id)
         else:
-            messages.warning(request, f'請您確實完成選單！')
+            messages.warning(request, '請您確實完成選單與各項欄位填寫！')
             return redirect('batting', cup_id=cup_id, game_id=game_id)
     else:
         playerform = PlayerForm()
         battingform = BattingForm()
+
     context = {
         'playerform': playerform,
         'battingform': battingform,
@@ -348,36 +434,45 @@ def batting(request, cup_id, game_id):
     }
     return render(request, 'dashboard/batting.html', context)
 
+
 @login_required
 def batting_delete(request, cup_id, game_id, player_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    battingvalue = Batting.objects.get(game_id=game_id, player_id=player_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    battingvalue = get_object_or_404(Batting, game=gamevalue, player_id=player_id)
+    player_name = battingvalue.player.player_name
+
     if request.method == 'POST':
         battingvalue.delete()
+        messages.success(request, f'您已成功刪除「{player_name}」的打擊成績')
         return redirect('batting', cup_id=cup_id, game_id=game_id)
+
     context = {
         'cupvalue': cupvalue,
         'battingvalue': battingvalue,
     }
     return render(request, 'dashboard/batting_delete.html', context)
 
+
 @login_required
 def batting_update(request, cup_id, game_id, player_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    battingvalue = Batting.objects.get(game_id=game_id, player_id=player_id)
-    playervalue = Player.objects.get(player_id=player_id)
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    battingvalue = get_object_or_404(Batting, game=gamevalue, player_id=player_id)
+    playervalue = battingvalue.player
+
     if request.method == 'POST':
         playerform = PlayerForm(request.POST, instance=playervalue)
         battingform = BattingForm(request.POST, instance=battingvalue)
         if playerform.is_valid() and battingform.is_valid():
             playerform.save()
             battingform.save()
-            player_name = playervalue.player_name
-            messages.success(request, f'您已成功修改「{player_name}」的本場成績')
+            messages.success(request, f'您已成功修改「{playervalue.player_name}」的本場成績')
             return redirect('batting', cup_id=cup_id, game_id=game_id)
     else:
         playerform = PlayerForm(instance=playervalue)
         battingform = BattingForm(instance=battingvalue)
+
     context = {
         'cupvalue': cupvalue,
         'playerform': playerform,
@@ -386,180 +481,96 @@ def batting_update(request, cup_id, game_id, player_id):
     }
     return render(request, 'dashboard/batting_update.html', context)
 
+
 @login_required
 def batting_data(request, cup_id, game_id, player_id):
-    cupvalue = Cup.objects.get(cup_id=cup_id)
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="hometeam")
-    hometeamvalue = team_gamevalue.team
-    gamevalue = team_gamevalue.game
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="awayteam")
-    awayteamvalue = team_gamevalue.team
-    battingvalue = Batting.objects.get(game_id=game_id, player_id=player_id)
-    value = Batting.objects.get(game_id=game_id, player_id=player_id)
-    try:
-        ab = value.b_pa-(value.b_bb+value.b_hbp+value.b_sf+value.b_sh)
-    except:
-        ab = 0
-    try:
-        h = value.b_single+value.b_double+value.b_triple+value.b_hr
-    except:
-        h = 0
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    hometeam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="hometeam")
+    awayteam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="awayteam")
+    battingvalue = get_object_or_404(Batting, game=gamevalue, player_id=player_id)
 
-    try:
-        avg = round(h/ab,3)
-    except:
-        avg = 0
-    try:
-        obp = round((h+value.b_bb+value.b_hbp)/(ab+value.b_bb+value.b_hbp+value.b_sf),3)
-    except:
-        obp = 0
-    try:
-        slg = round(((1*value.b_single)+(2*value.b_double)+(3*value.b_triple)+(4*value.b_hr))/ab,3)
-    except:
-        slg = 0
-    try:
-        ops = round(obp+slg,3)
-    except:
-        ops = 0
-    try:
-        iso = round(slg-avg,3)
-    except:
-        iso = 0
-    try:
-        babip = round((h-value.b_hr)/(ab-value.b_so-value.b_hr+value.b_sf),3)
-    except:
-        babip = 0
-    try:
-        bip = round((ab-value.b_so-value.b_hr+value.b_sf)/(ab+value.b_bb+value.b_hbp+value.b_sf)*100,1)
-    except:
-        bip = 0
-    try:
-        bbp = round((value.b_bb-value.b_ibb)/value.b_pa*100,1)
-    except:
-        bbp = 0
-    try:
-        sobb = round(value.b_so/(value.b_bb-value.b_ibb),3)
-    except:
-        sobb = 0
-    try:
-        sop = round(value.b_so/value.b_pa*100,1)
-    except:
-        sop = 0
+    stats = calculate_batting_stats(
+        battingvalue.b_pa, battingvalue.b_single, battingvalue.b_double,
+        battingvalue.b_triple, battingvalue.b_hr, battingvalue.b_bb,
+        battingvalue.b_ibb, battingvalue.b_hbp, battingvalue.b_so,
+        battingvalue.b_sh, battingvalue.b_sf
+    )
 
-    avg = ('%.3f'%avg)
-    obp = ('%.3f'%obp)
-    slg = ('%.3f'%slg)
-    ops = ('%.3f'%ops)
-    iso = ('%.3f'%iso)
-    babip = ('%.3f'%babip)
-    bip = ('%.1f'%bip)
-    bbp = ('%.1f'%bbp)
-    sobb = ('%.3f'%sobb)
-    sop = ('%.1f'%sop)
     context = {
         'cupvalue': cupvalue,
         'gamevalue': gamevalue,
-        'hometeamvalue': hometeamvalue,
-        'awayteamvalue': awayteamvalue,
+        'hometeamvalue': hometeam_gamevalue.team,
+        'awayteamvalue': awayteam_gamevalue.team,
         'battingvalue': battingvalue,
-        'avg': avg,
-        'obp': obp,
-        'slg': slg,
-        'ops': ops,
-        'iso': iso,
-        'babip': babip,
-        'bip': bip,
-        'bbp': bbp,
-        'sobb': sobb,
-        'sop': sop,
+        **stats,
     }
     return render(request, 'dashboard/batting_data.html', context)
 
 
+# ==============================
+# 單場投球成績 (Pitching)
+# ==============================
+
 @login_required
-def pitching(request, game_id):
-    # gamevalue = Game.objects.get(game_id=game_id)
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="hometeam")
-    hometeamvalue = team_gamevalue.team
-    gamevalue = team_gamevalue.game
-    team_gamevalue = Team_Game.objects.get(game_id=game_id, team_role="awayteam")
-    awayteamvalue = team_gamevalue.team
-    playervalues = Player.objects.filter(user_id=request.user.id)
-    hometeam_pitchingvalues = Pitching.objects.filter(game_id=game_id,team_id=hometeamvalue.team_id)
-    awayteam_pitchingvalues = Pitching.objects.filter(game_id=game_id,team_id=awayteamvalue.team_id)
+def pitching(request, cup_id, game_id):
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+
+    hometeam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="hometeam")
+    awayteam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="awayteam")
+    hometeamvalue = hometeam_gamevalue.team
+    awayteamvalue = awayteam_gamevalue.team
+
+    # 取得兩隊所有選手（排除使用者關聯錯誤）
+    playervalues = Player.objects.filter(team_player__team__in=[hometeamvalue, awayteamvalue]).distinct()
+    hometeam_pitchingvalues = Pitching.objects.filter(game=gamevalue, team=hometeamvalue)
+    awayteam_pitchingvalues = Pitching.objects.filter(game=gamevalue, team=awayteamvalue)
 
     if request.method == 'POST':
         playerform = PlayerForm(request.POST)
         pitchingform = PitchingForm(request.POST)
-        player_id = request.POST.get('player_id')
-        team_id = request.POST.get('team_id')
-        player_role = request.POST.get('player_role')
-        if team_id != "請選擇所屬球隊" and player_role != "請選擇守備位置" and playerform.is_valid() and pitchingform.is_valid():
-            player_name = playerform.cleaned_data.get('player_name')
-            if player_id != "選擇先前曾建立過的球員":
-                try:
-                    pitchingvalue = Pitching.objects.get(game_id=game_id,player_id=player_id)
-                    messages.success(request, f'您先前已建立過「{pitchingvalue.player.player_name}」的本場成績')
-                    return redirect('pitching', game_id=game_id)
-                except:
-                    try:
-                        team_playervalue = Team_Player.objects.get(team_id=team_id,player_id=player_id)
+        player_id = (request.POST.get('player_id') or '').strip()
+        team_id = (request.POST.get('team_id') or '').strip()
+        player_role = (request.POST.get('player_role') or '').strip()
 
-                        pitchingobj = pitchingform.save(commit=False)
-                        pitchingobj.game_id = game_id
-                        pitchingobj.team_id = team_id
-                        pitchingobj.player_id = player_id
-                        pitchingobj.player_role = player_role
-                        pitchingobj.save()
-                        messages.success(request, f'您已成功新增「{team_playervalue.player.player_name}」的本場成績')
-                        return redirect('pitching', game_id=game_id)
-                    except:
-                        team_playerform = Team_PlayerForm()
-                        team_playerobj = team_playerform.save(commit=False)
-                        team_playerobj.team_id = team_id
-                        team_playerobj.player_id = player_id
-                        team_playerobj.save()
+        if team_id not in ('', '請選擇所屬球隊') and player_role not in ('', '請選擇守備位置') and pitchingform.is_valid():
+            team_obj = get_object_or_404(Team, team_id=team_id)
 
-                        pitchingobj = pitchingform.save(commit=False)
-                        pitchingobj.game_id = game_id
-                        pitchingobj.team_id = team_id
-                        pitchingobj.player_id = player_id
-                        pitchingobj.player_role = player_role
-                        pitchingobj.save()
-                        team_playervalue = Team_Player.objects.get(team_id=team_id,player_id=player_id)
-                        messages.success(request, f'您已成功新增「{team_playervalue.player.player_name}」的本場成績')
-                        return redirect('pitching', game_id=game_id)
-            elif player_id == "選擇先前曾建立過的球員":
-                if player_name == "":
-                    messages.success(request, f'請確實完成選單！')
-                    return redirect('pitching', game_id=game_id)
-                playerobj = playerform.save(commit=False)
-                playerobj.save()
-                player_id = playerobj.player_id
-                
-                team_playerform = Team_PlayerForm()
-                team_playerobj = team_playerform.save(commit=False)
-                team_playerobj.team_id = team_id
-                team_playerobj.player_id = player_id
-                team_playerobj.save()
+            if player_id and player_id != '選擇先前曾建立過的球員':
+                player_obj = get_object_or_404(Player, player_id=player_id)
+                if Pitching.objects.filter(game=gamevalue, player=player_obj).exists():
+                    messages.warning(request, f'您先前已建立過「{player_obj.player_name}」的本場成績')
+                    return redirect('pitching', cup_id=cup_id, game_id=game_id)
+            else:
+                if not playerform.is_valid():
+                    messages.warning(request, '請輸入球員姓名！')
+                    return redirect('pitching', cup_id=cup_id, game_id=game_id)
+                player_name = playerform.cleaned_data.get('player_name')
+                player_obj = Player.objects.create(player_name=player_name)
 
-                pitchingobj = pitchingform.save(commit=False)
-                pitchingobj.game_id = game_id
-                pitchingobj.team_id = team_id
-                pitchingobj.player_id = player_id
-                pitchingobj.player_role = player_role
-                pitchingobj.save()
-                messages.success(request, f'您已成功建立「{player_name}」的本場成績')
-                return redirect('pitching', game_id=game_id)
+            Team_Player.objects.get_or_create(team=team_obj, player=player_obj)
+
+            pitchingobj = pitchingform.save(commit=False)
+            pitchingobj.game = gamevalue
+            pitchingobj.team = team_obj
+            pitchingobj.player = player_obj
+            pitchingobj.player_role = player_role
+            pitchingobj.save()
+
+            messages.success(request, f'您已成功新增「{player_obj.player_name}」的本場成績')
+            return redirect('pitching', cup_id=cup_id, game_id=game_id)
         else:
-            messages.warning(request, f'請您確實完成選單！')
-            return redirect('pitching', game_id=game_id)
+            messages.warning(request, '請您確實完成選單！')
+            return redirect('pitching', cup_id=cup_id, game_id=game_id)
     else:
         playerform = PlayerForm()
         pitchingform = PitchingForm()
+
     context = {
         'playerform': playerform,
         'pitchingform': pitchingform,
+        'cupvalue': cupvalue,
         'gamevalue': gamevalue,
         'hometeamvalue': hometeamvalue,
         'awayteamvalue': awayteamvalue,
@@ -569,53 +580,75 @@ def pitching(request, game_id):
     }
     return render(request, 'dashboard/pitching.html', context)
 
+
 @login_required
-def pitching_data(request, game_id, player_id):
-    pitchingvalue = Pitching.objects.get(game_id=game_id, player_id=player_id)
-    value = Pitching.objects.get(game_id=game_id, player_id=player_id)
-    try:
-        h = value.p_single+value.p_double+value.p_triple+value.p_hr
-    except:
-        h = 0
+def pitching_delete(request, cup_id, game_id, player_id):
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    pitchingvalue = get_object_or_404(Pitching, game=gamevalue, player_id=player_id)
+    player_name = pitchingvalue.player.player_name
 
-    try:
-        era = round((value.p_er*9/value.p_ip),3)
-    except:
-        era = 0
-    try:
-        whip = round((h+value.p_bb)/value.p_ip,3)
-    except:
-        whip = 0
-    try:
-        h9 = round((h*9/value.p_ip),3)
-    except:
-        h9 = 0
-    try:
-        hr9 = round((value.p_hr*9/value.p_ip),3)
-    except:
-        hr9 = 0
-    try:
-        bb9 = round((value.p_bb*9/value.p_ip),3)
-    except:
-        bb9 = 0
-    try:
-        so9 = round((value.p_so*9/value.p_ip),3)
-    except:
-        so9 = 0
+    if request.method == 'POST':
+        pitchingvalue.delete()
+        messages.success(request, f'您已成功刪除「{player_name}」的投球成績')
+        return redirect('pitching', cup_id=cup_id, game_id=game_id)
 
-    era = ('%.3f'%era)
-    whip = ('%.3f'%whip)
-    h9 = ('%.3f'%h9)
-    hr9 = ('%.3f'%hr9)
-    bb9 = ('%.3f'%bb9)
-    so9 = ('%.3f'%so9)
     context = {
+        'cupvalue': cupvalue,
         'pitchingvalue': pitchingvalue,
-        'era': era,
-        'whip': whip,
-        'h9': h9,
-        'hr9': hr9,
-        'bb9': bb9,
-        'so9': so9,
+    }
+    return render(request, 'dashboard/pitching_delete.html', context)
+
+
+@login_required
+def pitching_update(request, cup_id, game_id, player_id):
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    pitchingvalue = get_object_or_404(Pitching, game=gamevalue, player_id=player_id)
+    playervalue = pitchingvalue.player
+
+    if request.method == 'POST':
+        playerform = PlayerForm(request.POST, instance=playervalue)
+        pitchingform = PitchingForm(request.POST, instance=pitchingvalue)
+        if playerform.is_valid() and pitchingform.is_valid():
+            playerform.save()
+            pitchingform.save()
+            messages.success(request, f'您已成功修改「{playervalue.player_name}」的投球成績')
+            return redirect('pitching', cup_id=cup_id, game_id=game_id)
+    else:
+        playerform = PlayerForm(instance=playervalue)
+        pitchingform = PitchingForm(instance=pitchingvalue)
+
+    context = {
+        'cupvalue': cupvalue,
+        'playerform': playerform,
+        'pitchingform': pitchingform,
+        'pitchingvalue': pitchingvalue,
+        'playervalue': playervalue,
+    }
+    return render(request, 'dashboard/pitching_update.html', context)
+
+
+@login_required
+def pitching_data(request, cup_id, game_id, player_id):
+    cupvalue = get_object_or_404(Cup, cup_id=cup_id, user=request.user)
+    gamevalue = get_object_or_404(Game, game_id=game_id, cup=cupvalue)
+    hometeam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="hometeam")
+    awayteam_gamevalue = get_object_or_404(Team_Game, game=gamevalue, team_role="awayteam")
+    pitchingvalue = get_object_or_404(Pitching, game=gamevalue, player_id=player_id)
+
+    stats = calculate_pitching_stats(
+        pitchingvalue.p_ip, pitchingvalue.p_single, pitchingvalue.p_double,
+        pitchingvalue.p_triple, pitchingvalue.p_hr, pitchingvalue.p_bb,
+        pitchingvalue.p_so, pitchingvalue.p_er
+    )
+
+    context = {
+        'cupvalue': cupvalue,
+        'gamevalue': gamevalue,
+        'hometeamvalue': hometeam_gamevalue.team,
+        'awayteamvalue': awayteam_gamevalue.team,
+        'pitchingvalue': pitchingvalue,
+        **stats,
     }
     return render(request, 'dashboard/pitching_data.html', context)

@@ -18,40 +18,45 @@
 </section>
 <section class="pt-5 mt-5 pb-5 mb-5">
     <div class="container">
-        <table class="table table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th class="header" scope="col">姓名</th>
-                    <th class="header hovertext" data-hover="PA" scope="col">打席</th>
-                    <th class="header hovertext" data-hover="AVG" scope="col">打擊率</th>
-                    <th class="header hovertext" data-hover="OBP" scope="col">上壘率</th>
-                    <th class="header hovertext" data-hover="SLG" scope="col">長打率</th>
-                    <th class="header hovertext" data-hover="OPS" scope="col">攻擊指數</th>
-                    <th class="header hovertext" data-hover="ISO" scope="col">純長打率</th>
-                    <th class="header hovertext" data-hover="BABIP" scope="col">場內球安打率</th>
-                    <th class="header hovertext" data-hover="BIP%" scope="col">擊入場內率</th>
-                    <th class="header hovertext" data-hover="BB％" scope="col">得四壞率</th>
-                    <th class="header hovertext" data-hover="SO/BB" scope="col">三振四壞比</th>
-                    <th class="header hovertext" data-hover="SO%" scope="col">被三振率</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">{{battingvalue.player.player_name}}</th>
-                    <td>{{battingvalue.b_pa}}</td>
-                    <td>{{avg}}</td>
-                    <td>{{obp}}</td>
-                    <td>{{slg}}</td>
-                    <td>{{ops}}</td>
-                    <td>{{iso}}</td>
-                    <td>{{babip}}</td>
-                    <td>{{bip}}%</td>
-                    <td>{{bbp}}%</td>
-                    <td>{{sobb}}</td>
-                    <td>{{sop}}%</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="header" scope="col">姓名</th>
+                        <th class="header hovertext" data-hover="PA" scope="col">打席</th>
+                        <th class="header hovertext" data-hover="AVG" scope="col">打擊率</th>
+                        <th class="header hovertext" data-hover="OBP" scope="col">上壘率</th>
+                        <th class="header hovertext" data-hover="SLG" scope="col">長打率</th>
+                        <th class="header hovertext" data-hover="OPS" scope="col">攻擊指數</th>
+                        <th class="header hovertext" data-hover="ISO" scope="col">純長打率</th>
+                        <th class="header hovertext" data-hover="BABIP" scope="col">場內球安打率</th>
+                        <th class="header hovertext" data-hover="BIP%" scope="col">擊入場內率</th>
+                        <th class="header hovertext" data-hover="BB％" scope="col">得四壞率</th>
+                        <th class="header hovertext" data-hover="SO/BB" scope="col">三振四壞比</th>
+                        <th class="header hovertext" data-hover="SO%" scope="col">被三振率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">{{battingvalue.player.player_name}}</th>
+                        <td>{{battingvalue.b_pa}}</td>
+                        <td>{{avg}}</td>
+                        <td>{{obp}}</td>
+                        <td>{{slg}}</td>
+                        <td>{{ops}}</td>
+                        <td>{{iso}}</td>
+                        <td>{{babip}}</td>
+                        <td>{{bip}}%</td>
+                        <td>{{bbp}}%</td>
+                        <td>{{sobb}}</td>
+                        <td>{{sop}}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">
+            <a href="{% url 'batting' cupvalue.cup_id battingvalue.game_id %}" class="btn btn-secondary">返回打擊記錄</a>
+        </div>
     </div>
 </section>
 {% endblock %}

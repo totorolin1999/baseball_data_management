@@ -1,71 +1,68 @@
 {% extends 'partials/base.html' %}
-{% block title %}Delete Page{% endblock %}
+{% block title %} 修改投球資料 {% endblock %}
 {% load crispy_forms_tags %}
-
+{% load static %}
 {% block content %}
-<section class="p-5 m-5">
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>Welcome, <span class="text-primary">{{ user.username }} Manager!</span></h1>
+        <p class="lead my-4">
+          修改「{{ playervalue.player_name }}」的本場投球數據
+        </p>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/home.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<section class="pt-5 mt-5 pb-5 mb-5">
     <div class="container">
-        <div class="row">
-            <div class="alert alert-warning" role="alert">
-                <h4 class="alert-heading">更新</h4>
-                <p>您確定要更新這一筆資料嗎？</p>
-                <hr>
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.name|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.ip|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.h|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.hr|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.bb|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.ibb|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.hbp|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.so|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-control">
-                                {{ form.er|as_crispy_field }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a class="btn btn-secondary" href="{% url 'pitching' %}">取消</a>
-                        <input class="btn btn-warning" type="submit" value="更新">
-                    </div>
-                </form>
-            </div>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+              <thead class="table-dark">
+                  <tr>
+                      <th class="header" scope="col">姓名</th>
+                      <th class="header hovertext" data-hover="IP" scope="col">局數</th>
+                      <th class="header hovertext" data-hover="1B" scope="col">被一安</th>
+                      <th class="header hovertext" data-hover="2B" scope="col">被二安</th>
+                      <th class="header hovertext" data-hover="3B" scope="col">被三安</th>
+                      <th class="header hovertext" data-hover="HR" scope="col">被全壘打</th>
+                      <th class="header hovertext" data-hover="BB" scope="col">四壞</th>
+                      <th class="header hovertext" data-hover="IBB" scope="col">故四</th>
+                      <th class="header hovertext" data-hover="HBP" scope="col">死球</th>
+                      <th class="header hovertext" data-hover="SO" scope="col">三振</th>
+                      <th class="header hovertext" data-hover="SF" scope="col">犧飛</th>
+                      <th class="header hovertext" data-hover="ER" scope="col">責失</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <th scope="row">{{ playerform.player_name|as_crispy_field }}</th>
+                      <td>{{ pitchingform.p_ip|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_single|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_double|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_triple|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_hr|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_bb|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_ibb|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_hbp|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_so|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_sf|as_crispy_field }}</td>
+                      <td>{{ pitchingform.p_er|as_crispy_field }}</td>
+                  </tr>
+              </tbody>
+          </table>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+          <a class="btn btn-secondary" href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}">取消</a>
+          <input class="btn btn-warning" type="submit" value="修改">
+        </div>
+      </form>
     </div>
 </section>
 {% endblock %}

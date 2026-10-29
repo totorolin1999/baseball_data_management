@@ -22,13 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-h+4z=79ul=ad7-gx!(w=_b!))*!^1m#4ajmo(lx-q2^-66$09m'
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-baseball-data-management-key-replace-in-production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
 
 
 # Application definition
@@ -80,19 +79,29 @@ WSGI_APPLICATION = 'baseball_data_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'baseballdb',
-        'USER':'',
-        'PASSWORD':'',
-        'HOST':'localhost\SQLEXPRESS',
-        'OPTIONS':{
-            'driver':'ODBC Driver 17 for SQL Server',
-            'isolation_level':'READ UNCOMMITTED' #to prevent deadlocks
+USE_SQLITE = os.getenv("DJANGO_USE_SQLITE", "False").lower() in ("true", "1", "t")
+
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DB_ENGINE', 'mssql'),
+            'NAME': os.getenv('DB_NAME', 'baseballdb'),
+            'USER': os.getenv('DB_USER', ''),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', r'localhost\SQLEXPRESS'),
+            'OPTIONS': {
+                'driver': os.getenv('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
+                'isolation_level': 'READ UNCOMMITTED',  # to prevent deadlocks
+            }
+        }
+    }
 
 
 # Password validation
@@ -132,12 +141,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-STATIC_ROOT = (BASE_DIR/"asert/")
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_REDIRECT_URL = 'index'
 

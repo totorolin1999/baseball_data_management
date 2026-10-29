@@ -14,18 +14,9 @@
                     {{ message }}
                 </div>
                 {% endif %}
-                {% endfor %}
+            {% endfor %}
             {% csrf_token %}
             <legend>{{ gamevalue.game_name }}：{{ hometeamvalue.team_name }}VS{{ awayteamvalue.team_name }}</legend>
-            <!-- <div class="col-auto">
-              <label class="visually-hidden" for="autoSizingSelect">Preference</label>
-              <select class="form-select" id="autoSizingSelect">
-                <option selected>請選擇打者姓名</option>
-                <option value="1">選手姓名</option>
-                <option value="2">選手姓名</option>
-                <option value="3">選手姓名</option>
-              </select>
-            </div> -->
             <div class="col-auto">
                 {{ playerform.player_name|as_crispy_field }}
             </div>
@@ -34,7 +25,7 @@
                 <select class="form-select" id="autoSizingSelect" name="player_id">
                   <option selected>選擇先前曾建立過的球員</option>
                   {% for playervalue in playervalues %}
-                  <option value={{ playervalue.player_id }}>{{ playervalue.player_name }}</option>
+                  <option value="{{ playervalue.player_id }}">{{ playervalue.player_name }}</option>
                   {% endfor %}
                 </select>
             </div>
@@ -42,8 +33,8 @@
                 <label class="visually-hidden" for="autoSizingSelect">Preference</label>
                 <select class="form-select" id="autoSizingSelect" name="team_id">
                   <option selected>請選擇所屬球隊</option>
-                  <option value={{ hometeamvalue.team_id }}>{{ hometeamvalue.team_name }}</option>
-                  <option value={{ awayteamvalue.team_id }}>{{ awayteamvalue.team_name }}</option>
+                  <option value="{{ hometeamvalue.team_id }}">{{ hometeamvalue.team_name }}</option>
+                  <option value="{{ awayteamvalue.team_id }}">{{ awayteamvalue.team_name }}</option>
                 </select>
             </div>
             <div class="col-auto">
@@ -62,8 +53,6 @@
                 </select>
             </div>
             <div class="col-auto">
-                <!-- <label class="visually-hidden" for="autoSizingInput">Name</label>
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="Jane Doe"> -->
                 {{ pitchingform.p_ip|as_crispy_field }}
             </div>
             <div class="col-auto">
@@ -96,25 +85,17 @@
             <div class="col-auto">
                 {{ pitchingform.p_er|as_crispy_field }}
             </div>
-            <!-- <div class="col-auto">
-                <label class="visually-hidden" for="autoSizingInput">Name</label>
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="滾地出局">
-            </div>
             <div class="col-auto">
-                <label class="visually-hidden" for="autoSizingInput">Name</label>
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="高飛出局">
-            </div> -->
-            <div class="col-auto">
-              <button type="submit" class="btn btn-primary">建立成績</button>
+                <button type="submit" class="btn btn-primary">建立</button>
             </div>
         </form>
         <br>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">暨南大學</button>
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">{{ hometeamvalue.team_name }}</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">東海大學</button>
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ awayteamvalue.team_name }}</button>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -143,22 +124,22 @@
                         {% for hometeam_pitchingvalue in hometeam_pitchingvalues %}
                         <tr>
                             <th scope="row">{{ hometeam_pitchingvalue.player.player_name }}</th>
-                            <td>{{hometeam_pitchingvalue.role}}</td>
-                            <td>{{hometeam_pitchingvalue.p_ip}}</td>
-                            <td>{{hometeam_pitchingvalue.p_single}}</td>
-                            <td>{{hometeam_pitchingvalue.p_double}}</td>
-                            <td>{{hometeam_pitchingvalue.p_triple}}</td>
-                            <td>{{hometeam_pitchingvalue.p_hr}}</td>
-                            <td>{{hometeam_pitchingvalue.p_bb}}</td>
-                            <td>{{hometeam_pitchingvalue.p_ibb}}</td>
-                            <td>{{hometeam_pitchingvalue.p_hbp}}</td>
-                            <td>{{hometeam_pitchingvalue.p_so}}</td>
-                            <td>{{hometeam_pitchingvalue.p_sf}}</td>
-                            <td>{{hometeam_pitchingvalue.p_er}}</td>
-                            <td><a class="btn btn-secondary" href="{% url 'dashboard-batting-data' hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">檢視</a></td>
+                            <td>{{ hometeam_pitchingvalue.player_role }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_ip }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_single }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_double }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_triple }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_hr }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_bb }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_ibb }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_hbp }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_so }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_sf }}</td>
+                            <td>{{ hometeam_pitchingvalue.p_er }}</td>
+                            <td><a class="btn btn-secondary" href="{% url 'pitching-data' cupvalue.cup_id hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">檢視</a></td>
                             <td>
-                                <a class="btn btn-warning" href="{% url 'dashboard-batting-update' hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">修改</a>
-                                <a class="btn btn-danger" href="{% url 'dashboard-batting-delete' hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">刪除</a>
+                                <a class="btn btn-warning" href="{% url 'pitching-update' cupvalue.cup_id hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">修改</a>
+                                <a class="btn btn-danger" href="{% url 'pitching-delete' cupvalue.cup_id hometeam_pitchingvalue.game_id hometeam_pitchingvalue.player_id %}">刪除</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -190,22 +171,22 @@
                         {% for awayteam_pitchingvalue in awayteam_pitchingvalues %}
                         <tr>
                             <th scope="row">{{ awayteam_pitchingvalue.player.player_name }}</th>
-                            <td>{{awayteam_pitchingvalue.role}}</td>
-                            <td>{{awayteam_pitchingvalue.p_ip}}</td>
-                            <td>{{awayteam_pitchingvalue.p_single}}</td>
-                            <td>{{awayteam_pitchingvalue.p_double}}</td>
-                            <td>{{awayteam_pitchingvalue.p_triple}}</td>
-                            <td>{{awayteam_pitchingvalue.p_hr}}</td>
-                            <td>{{awayteam_pitchingvalue.p_bb}}</td>
-                            <td>{{awayteam_pitchingvalue.p_ibb}}</td>
-                            <td>{{awayteam_pitchingvalue.p_hbp}}</td>
-                            <td>{{awayteam_pitchingvalue.p_so}}</td>
-                            <td>{{awayteam_pitchingvalue.p_sf}}</td>
-                            <td>{{awayteam_pitchingvalue.p_er}}</td>
-                            <td><a class="btn btn-secondary" href="{% url 'dashboard-batting-data' awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">檢視</a></td>
+                            <td>{{ awayteam_pitchingvalue.player_role }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_ip }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_single }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_double }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_triple }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_hr }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_bb }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_ibb }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_hbp }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_so }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_sf }}</td>
+                            <td>{{ awayteam_pitchingvalue.p_er }}</td>
+                            <td><a class="btn btn-secondary" href="{% url 'pitching-data' cupvalue.cup_id awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">檢視</a></td>
                             <td>
-                                <a class="btn btn-warning" href="{% url 'dashboard-batting-update' awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">更新</a>
-                                <a class="btn btn-danger" href="{% url 'dashboard-batting-delete' awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">刪除</a>
+                                <a class="btn btn-warning" href="{% url 'pitching-update' cupvalue.cup_id awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">更新</a>
+                                <a class="btn btn-danger" href="{% url 'pitching-delete' cupvalue.cup_id awayteam_pitchingvalue.game_id awayteam_pitchingvalue.player_id %}">刪除</a>
                             </td>
                         </tr>
                         {% endfor %}

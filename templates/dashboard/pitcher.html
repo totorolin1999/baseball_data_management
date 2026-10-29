@@ -1,8 +1,63 @@
 {% extends 'partials/base.html' %}
-{% block title %} Pitcher Page {% endblock %}
-
+{% block title %} {{ teamvalue.team_name }} - 投手數據 {% endblock %}
+{% load crispy_forms_tags %}
 {% block content %}
 
-
-
+<br>
+<br>
+<section class="pt-5 mt-5 pb-5 mb-5">
+    <div class="container containertable">
+        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" type="button">{{ teamvalue.team_name }}</button>
+            </li>
+        </ul>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead style="position: sticky;top: 0" class="table-dark">
+                    <tr>
+                        <th class="header" scope="col">姓名</th>
+                        <th class="header hovertext" data-hover="IP" scope="col">局數</th>
+                        <th class="header hovertext" data-hover="ER" scope="col">責失</th>
+                        <th class="header hovertext" data-hover="H" scope="col">被安打</th>
+                        <th class="header hovertext" data-hover="BB" scope="col">四死球</th>
+                        <th class="header hovertext" data-hover="SO" scope="col">三振</th>
+                        <th class="header hovertext" data-hover="ERA" scope="col">防禦率</th>
+                        <th class="header hovertext" data-hover="WHIP" scope="col">每局被上壘率</th>
+                        <th class="header hovertext" data-hover="H/9" scope="col">九局被安打率</th>
+                        <th class="header hovertext" data-hover="HR/9" scope="col">九局被全壘打率</th>
+                        <th class="header hovertext" data-hover="BB/9" scope="col">九局保送率</th>
+                        <th class="header hovertext" data-hover="K/9" scope="col">九局三振率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in pitchers_stats %}
+                    <tr>
+                        <th scope="row">{{ stat.name }}</th>
+                        <td>{{ stat.ip }}</td>
+                        <td>{{ stat.er }}</td>
+                        <td>{{ stat.h }}</td>
+                        <td>{{ stat.bb }}</td>
+                        <td>{{ stat.so }}</td>
+                        <td>{{ stat.era }}</td>
+                        <td>{{ stat.whip }}</td>
+                        <td>{{ stat.h9 }}</td>
+                        <td>{{ stat.hr9 }}</td>
+                        <td>{{ stat.bb9 }}</td>
+                        <td>{{ stat.so9 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center text-muted">目前該球隊尚無投球成績記錄。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">
+            <a href="{% url 'hometeam' %}" class="btn btn-secondary">返回所屬球隊</a>
+            <a href="{% url 'awayteam' %}" class="btn btn-outline-secondary">返回對戰球隊</a>
+        </div>
+    </div>
+</section>
 {% endblock %}

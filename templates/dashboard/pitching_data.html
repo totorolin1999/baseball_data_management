@@ -1,0 +1,56 @@
+{% extends 'partials/base.html' %}
+{% block title %} 投手數據 {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<br>
+<!-- Showcase -->
+<section class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start">
+  <div class="container">
+    <div class="d-sm-flex align-items-center justify-content-between">
+      <div>
+        <h1>{{ cupvalue.cup_name }} {{ gamevalue.game_name }}：<span class="text-primary">{{ hometeamvalue.team_name }} VS {{ awayteamvalue.team_name }}</span></h1>
+      </div>
+      <img class="img-fluid w-25 d-none d-sm-block" src="{% static '/programmer.svg' %}" alt="" />
+    </div>
+  </div>
+</section>
+<section class="pt-5 mt-5 pb-5 mb-5">
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="header" scope="col">姓名</th>
+                        <th class="header hovertext" data-hover="IP" scope="col">局數</th>
+                        <th class="header hovertext" data-hover="ER" scope="col">責失</th>
+                        <th class="header hovertext" data-hover="ERA" scope="col">防禦率</th>
+                        <th class="header hovertext" data-hover="WHIP" scope="col">每局被上壘率</th>
+                        <th class="header hovertext" data-hover="H/9" scope="col">九局被安打率</th>
+                        <th class="header hovertext" data-hover="HR/9" scope="col">九局被全壘打率</th>
+                        <th class="header hovertext" data-hover="BB/9" scope="col">九局保送率</th>
+                        <th class="header hovertext" data-hover="K/9" scope="col">九局三振率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ pitchingvalue.player.player_name }}</th>
+                        <td>{{ pitchingvalue.p_ip }}</td>
+                        <td>{{ pitchingvalue.p_er }}</td>
+                        <td>{{ era }}</td>
+                        <td>{{ whip }}</td>
+                        <td>{{ h9 }}</td>
+                        <td>{{ hr9 }}</td>
+                        <td>{{ bb9 }}</td>
+                        <td>{{ so9 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">
+            <a href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}" class="btn btn-secondary">返回投球記錄</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,22 +1,29 @@
 {% extends 'partials/base.html' %}
-{% block title %}Delete Page{% endblock %}
-
+{% block title %} 刪除投球資料 {% endblock %}
+{% load static %}
 {% block content %}
-<section class="p-5 m-5">
+<br>
+<br>
+<br>
+<section id="learn" class="p-5">
     <div class="container">
-        <div class="row text-center">
-            <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">刪除</h4>
-                <p>您確定要刪除這一筆資料嗎？</p>
-                <hr>
-                <form method="POST">
-                    {% csrf_token %}
-                    <!-- {{ form }} -->
-                    <a class="btn btn-secondary" href="{% url 'pitching' %}">取消</a>
-                    <input class="btn btn-danger" type="submit" value="刪除">
-                </form>
-            </div>
+      <div class="row align-items-center justify-content-between">
+        <div class="col-md">
+          <img src="{% static '/manager.svg' %}" class="img-fluid" alt="" />
         </div>
+        <div class="col-md p-5">
+            <form method="POST">
+                <h2>刪除投球資料</h2>
+                <br>
+                {% csrf_token %}
+                <p class="lead">
+                    您確定要刪除「{{ pitchingvalue.player.player_name }}」的這筆投球資料嗎？
+                </p>
+                <a href="{% url 'pitching' cupvalue.cup_id pitchingvalue.game_id %}" class="btn btn-secondary">取消</a>
+                <input class="btn btn-danger" type="submit" value="刪除">
+            </form>
+        </div>
+      </div>
     </div>
 </section>
 {% endblock %}
